@@ -133,7 +133,7 @@ function updateColorWheel(colorData) {
                 const avgBrightness = hueData[saturationValue].totalBrightness / hueData[saturationValue].count;
                 ctx.strokeStyle = getColorByAngleAndRadius(angle, saturationValue, avgBrightness);
             } else {
-                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 5); // Reduced brightness to 30% for unmatched hues/saturations
+                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 0.5); // Reduced brightness to 30% for unmatched hues/saturations
             }
 
             ctx.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
@@ -141,4 +141,14 @@ function updateColorWheel(colorData) {
         }
     }
 }
+
+document.addEventListener('click', function (e) {
+    const target = e.target;
+    if (target.tagName.toLowerCase() === 'a' && target.href.match(/\.(jpeg|jpg|gif|png)$/)) {
+        e.preventDefault();
+        imageUrlInput.value = target.href;
+        analyzeImage();
+    }
+});
+
 drawColorWheel();

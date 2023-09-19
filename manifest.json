@@ -16,7 +16,8 @@
         "_execute_action": {
             "suggested_key": {
                 "default": "Ctrl+Shift+Y"
-            }
+            },
+            "description": "Activate Color Wheel"
         }
     },
     "action": {
