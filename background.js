@@ -1,10 +1,13 @@
-chrome.action.onClicked.addListener((tab) => {
-    // Inject the color wheel UI and related JS into the active tab
+chrome.action.onClicked.addListener(function (tab) {
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
         files: ['color-wheel.js']
+    }, () => {
+        // After injecting the content script, send the message
+        chrome.tabs.sendMessage(tab.id, { action: "showColorWheel" });
     });
 });
+
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     console.log("Received message in background:", message);

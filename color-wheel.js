@@ -1,10 +1,12 @@
+console.log("Content script loaded!");
 // Constants and DOM elements
-const canvas = document.getElementById('colorWheel');
-const ctx = canvas.getContext('2d');
-const center = { x: canvas.width / 2, y: canvas.height / 2 };
-const radius = Math.min(center.x, center.y);
-const imageUrlInput = document.getElementById('imageUrl');
-const analyzeButton = document.getElementById('analyzeButton');
+const canvas = document.createElement("canvas");
+canvas.id = "colorWheel";
+let ctx;
+let center;
+let radius;
+let imageUrlInput = document.getElementById('imageUrl');
+let analyzeButton = document.getElementById('analyzeButton');
 const corsProxy = "https://cors-anywhere.herokuapp.com/";
 
 // Initialization: Setting up the UI
@@ -12,13 +14,72 @@ function initializeUI() {
     // Create a container for the color wheel
     const container = document.createElement('div');
     container.id = 'colorWheelContainer';
-    document.body.appendChild(container);
+    container.style.position = 'fixed';
+    container.style.top = '10%';
+    container.style.left = '50%';
+    container.style.transform = 'translateX(-50%)';
+    container.style.zIndex = '99999';
+    container.style.backgroundColor = '#FFF';
+    container.style.border = '1px solid #000';
+    container.style.padding = '10px';
+    container.style.borderRadius = '8px';
+    container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.5)';
 
-    // Move the canvas into the container
+    // Create close button
+    const closeButton = document.createElement('button');
+    closeButton.innerText = 'X';
+    closeButton.style.position = 'absolute';
+    closeButton.style.top = '5px';
+    closeButton.style.right = '5px';
+    closeButton.style.background = 'red';
+    closeButton.style.color = 'white';
+    closeButton.style.border = 'none';
+    closeButton.style.borderRadius = '50%';
+    closeButton.style.width = '20px';
+    closeButton.style.height = '20px';
+    closeButton.style.cursor = 'pointer';
+    closeButton.onclick = () => {
+        document.body.removeChild(container);
+    };
+    container.appendChild(closeButton);
+
+    // Drag and drop
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    container.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - container.getBoundingClientRect().left;
+        offsetY = e.clientY - container.getBoundingClientRect().top;
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+    });
+
+    function onMouseMove(e) {
+        if (!isDragging) return;
+        const x = e.clientX - offsetX;
+        const y = e.clientY - offsetY;
+        container.style.left = `${x}px`;
+        container.style.top = `${y}px`;
+    }
+
+    function onMouseUp() {
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+        isDragging = false;
+    }
+
+
+    // Set up the canvas
+    canvas.width = 300;   // Set canvas size
+    canvas.height = 300;
+    ctx = canvas.getContext("2d");
+    center = { x: canvas.width / 2, y: canvas.height / 2 };
+    radius = canvas.width / 2;
+
     container.appendChild(canvas);
-
-    analyzeButton.addEventListener('click', analyzeImage);
-    drawColorWheel(); // Draw base color wheel
+    document.body.appendChild(container);
+    drawColorWheel();
 }
 
 // Analyze image function: Fetch, downsample, analyze, and draw
@@ -156,5 +217,13 @@ document.addEventListener('click', function (e) {
     }
 });
 
+// Adopt Content Script Behavior
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === "showColorWheel") {
+        initializeUI();
+    }
+});
+
 // Start the script by initializing UI elements
 initializeUI();
+
