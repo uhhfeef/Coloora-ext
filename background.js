@@ -1,13 +1,11 @@
 chrome.action.onClicked.addListener((tab) => {
-    // You can call your other functions here or toggle something. For now, just logging.
-    console.log('Extension icon clicked or shortcut used.');
-
-    // Example: If you want to inject your 'color-wheel.js' into the active tab when the icon is clicked or shortcut is used:
+    // Inject the color wheel UI and related JS into the active tab
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
         files: ['color-wheel.js']
     });
 });
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     console.log("Received message in background:", message);
 

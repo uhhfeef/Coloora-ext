@@ -32,5 +32,8 @@
     "permissions": [
         "activeTab",
         "tabs"
+    ],
+    "host_permissions": [
+        "https://pinterest.com/*"
     ]
 }
