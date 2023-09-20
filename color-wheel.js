@@ -45,22 +45,35 @@ function initializeUI() {
 
     // Drag and drop
     let isDragging = false;
-    let offsetX, offsetY;
+    let initialMouseX, initialMouseY;
+    let initialContainerX, initialContainerY;
 
     container.addEventListener('mousedown', (e) => {
         isDragging = true;
-        offsetX = e.clientX - container.getBoundingClientRect().left;
-        offsetY = e.clientY - container.getBoundingClientRect().top;
+
+        // Record the initial mouse position
+        initialMouseX = e.clientX;
+        initialMouseY = e.clientY;
+
+        // Record the initial position of the container
+        // Adjusting for the transform offset
+        initialContainerX = container.getBoundingClientRect().left + (container.offsetWidth / 2);
+        initialContainerY = container.getBoundingClientRect().top;
+
         window.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mouseup', onMouseUp);
     });
 
     function onMouseMove(e) {
         if (!isDragging) return;
-        const x = e.clientX - offsetX;
-        const y = e.clientY - offsetY;
-        container.style.left = `${x}px`;
-        container.style.top = `${y}px`;
+
+        // Calculate the movement
+        let dx = e.clientX - initialMouseX;
+        let dy = e.clientY - initialMouseY;
+
+        // Apply the movement to the container's position, adjusting for the transform offset
+        container.style.left = `${initialContainerX + dx}px`;
+        container.style.top = `${initialContainerY + dy}px`;
     }
 
     function onMouseUp() {
@@ -69,10 +82,9 @@ function initializeUI() {
         isDragging = false;
     }
 
-
     // Set up the canvas
-    canvas.width = 300;   // Set canvas size
-    canvas.height = 300;
+    canvas.width = 250;   // Set canvas size
+    canvas.height = 250;
     ctx = canvas.getContext("2d");
     center = { x: canvas.width / 2, y: canvas.height / 2 };
     radius = canvas.width / 2;
@@ -83,8 +95,7 @@ function initializeUI() {
 }
 
 // Analyze image function: Fetch, downsample, analyze, and draw
-function analyzeImage() {
-    const imageUrl = imageUrlInput.value;
+function analyzeImage(imageUrl) {
     console.log("Sending image URL to background:", imageUrl);
 
     chrome.runtime.sendMessage({ action: "fetchImage", imageUrl: imageUrl }, response => {
@@ -212,8 +223,7 @@ document.addEventListener('click', function (e) {
     const target = e.target;
     if (target.tagName.toLowerCase() === 'a' && target.href.match(/\.(jpeg|jpg|gif|png)$/)) {
         e.preventDefault();
-        imageUrlInput.value = target.href;
-        analyzeImage();
+        analyzeImage(target.href);
     }
 });
 

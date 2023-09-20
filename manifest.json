@@ -35,15 +35,5 @@
     ],
     "host_permissions": [
         "https://pinterest.com/*"
-    ],
-    "content_scripts": [
-        {
-            "matches": [
-                "<all_urls>"
-            ],
-            "js": [
-                "color-wheel.js"
-            ]
-        }
     ]
 }
