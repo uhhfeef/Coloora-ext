@@ -11,6 +11,7 @@ const corsProxy = "https://cors-anywhere.herokuapp.com/";
 
 // Initialization: Setting up the UI
 function initializeUI() {
+    console.log("Initializing UI...");
     // Create a container for the color wheel
     const container = document.createElement('div');
     container.id = 'colorWheelContainer';
@@ -92,12 +93,68 @@ function initializeUI() {
     container.appendChild(canvas);
     document.body.appendChild(container);
     drawColorWheel();
+
+    // Create a div for input and button to make them inline
+    const inputContainer = document.createElement('div');
+    inputContainer.style.display = 'flex';
+    inputContainer.style.justifyContent = 'space-between';
+    inputContainer.style.marginBottom = '10px';
+
+    // Create input for image URL
+    imageUrlInput = document.createElement('input');
+    imageUrlInput.id = 'imageUrl';
+    imageUrlInput.type = 'text';
+    imageUrlInput.placeholder = 'Enter image URL';
+    imageUrlInput.style.flex = '1';
+    imageUrlInput.style.marginRight = '10px';
+    inputContainer.appendChild(imageUrlInput);
+
+    // Create analyze button
+    analyzeButton = document.createElement('button');
+    analyzeButton.id = 'analyzeButton';
+    analyzeButton.innerText = 'Analyze Image';
+    analyzeButton.onclick = function () {
+        analyzeImage(imageUrlInput.value);
+    };
+    inputContainer.appendChild(analyzeButton);
+
+    // Append inputContainer to main container
+    container.appendChild(inputContainer);
+}
+
+function extractImageFromPage(url) {
+    return fetch(url)
+        .then(response => response.text())
+        .then(text => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, 'text/html');
+            const imgElements = doc.querySelectorAll('img');
+            if (imgElements.length > 0) {
+                return imgElements[0].src;
+            }
+            throw new Error('No images found');
+        });
 }
 
 // Analyze image function: Fetch, downsample, analyze, and draw
 function analyzeImage(imageUrl) {
-    console.log("Sending image URL to background:", imageUrl);
+    imageUrlInput.value = '';
+    drawColorWheel();  // Reset the color wheel
 
+    if (!imageUrl.match(/\.(jpeg|jpg|gif|png)$/)) {
+        extractImageFromPage(imageUrl)
+            .then(directImageUrl => {
+                sendImageForAnalysis(directImageUrl);
+            })
+            .catch(error => {
+                console.error('Failed to extract direct image URL:', error);
+            });
+    } else {
+        sendImageForAnalysis(imageUrl);
+    }
+}
+function sendImageForAnalysis(imageUrl) {
+    console.log("Sending image URL to background:", imageUrl);
     chrome.runtime.sendMessage({ action: "fetchImage", imageUrl: imageUrl }, response => {
         if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
@@ -129,17 +186,25 @@ function downsampleAndAnalyzeColors(img) {
     return analyzeColors(downsampledCtx, downsampledCanvas.width, downsampledCanvas.height);
 }
 
-function getColorByAngleAndRadius(angle, r, l = 50) {
+function getColorByAngleAndRadius(angle, r, l) {
     // Convert the angle to hue (0-360)
     let hue = angle;
 
     // Convert radius to saturation (0-100)
     let saturation = (r / radius) * 100;
 
+    // Check if l is undefined
+    if (l === undefined) {
+        l = 50;
+    }
+
     return `hsl(${hue}, ${saturation}%, ${l}%)`;
 }
 
 function drawColorWheel() {
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     for (let angle = 0; angle < 360; angle++) {
         for (let r = 0; r < radius; r++) {
             ctx.beginPath();
@@ -149,6 +214,7 @@ function drawColorWheel() {
         }
     }
 }
+
 
 function rgbToHsl(r, g, b) {
     r /= 255, g /= 255, b /= 255;
@@ -209,7 +275,7 @@ function updateColorWheel(colorData) {
                 const avgBrightness = hueData[saturationValue].totalBrightness / hueData[saturationValue].count;
                 ctx.strokeStyle = getColorByAngleAndRadius(angle, saturationValue, avgBrightness);
             } else {
-                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 5); // Reduced brightness to 30% for unmatched hues/saturations
+                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 0.1); // Reduced brightness to 30% for unmatched hues/saturations
             }
 
             ctx.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
@@ -218,22 +284,10 @@ function updateColorWheel(colorData) {
     }
 }
 
-// Event listeners
-document.addEventListener('click', function (e) {
-    const target = e.target;
-    if (target.tagName.toLowerCase() === 'a' && target.href.match(/\.(jpeg|jpg|gif|png)$/)) {
-        e.preventDefault();
-        analyzeImage(target.href);
-    }
-});
-
 // Adopt Content Script Behavior
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === "showColorWheel") {
         initializeUI();
     }
 });
-
-// Start the script by initializing UI elements
-initializeUI();
 
