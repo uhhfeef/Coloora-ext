@@ -139,7 +139,6 @@ function extractImageFromPage(url) {
 // Analyze image function: Fetch, downsample, analyze, and draw
 function analyzeImage(imageUrl) {
     imageUrlInput.value = '';
-    drawColorWheel();  // Reset the color wheel
 
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)$/)) {
         extractImageFromPage(imageUrl)
@@ -170,6 +169,7 @@ function sendImageForAnalysis(imageUrl) {
         img.src = response.dataURL;
         img.onload = function () {
             const colorData = downsampleAndAnalyzeColors(img);
+            drawColorWheel();  // Reset the color wheel
             updateColorWheel(colorData);
         }
     });
