@@ -1,13 +1,13 @@
 {
     "manifest_version": 3,
-    "name": "Eyedropper",
+    "name": "Coloora",
     "version": "1.0",
     "description": "Analyse colors",
     "icons": {
-        "16": "images/eyedropper-16.png",
-        "32": "images/eyedropper-32.png",
-        "48": "images/eyedropper-48.png",
-        "128": "images/eyedropper-128.png"
+        "16": "images/coloora-16.png",
+        "32": "images/coloora-32.png",
+        "48": "images/coloora-48.png",
+        "128": "images/coloora-128.png"
     },
     "background": {
         "service_worker": "background.js"
@@ -22,10 +22,10 @@
     },
     "action": {
         "default_icon": {
-            "16": "images/eyedropper-16.png",
-            "32": "images/eyedropper-32.png",
-            "48": "images/eyedropper-48.png",
-            "128": "images/eyedropper-128.png"
+            "16": "images/coloora-16.png",
+            "32": "images/coloora-32.png",
+            "48": "images/coloora-48.png",
+            "128": "images/coloora-128.png"
         }
     },
     "permissions": [
