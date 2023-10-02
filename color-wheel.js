@@ -152,28 +152,39 @@ function analyzeImage(imageUrl) {
         sendImageForAnalysis(imageUrl);
     }
 }
+
 function sendImageForAnalysis(imageUrl) {
-    console.log("Sending image URL to background:", imageUrl);
-    chrome.runtime.sendMessage({ action: "fetchImage", imageUrl: imageUrl }, response => {
-        if (chrome.runtime.lastError) {
-            console.error(chrome.runtime.lastError.message);
-            return;
-        }
+    console.log("Sending image URL to Flask API:", imageUrl);
 
-        if (response.status !== "success" || !response.dataURL) {
-            console.error(response.error || "Invalid response from background");
-            return;
-        }
+    // Endpoint where the Flask API is running.
+    const flaskApiEndpoint = "http://localhost:5000/fetch-image";
 
-        const img = new Image();
-        img.src = response.dataURL;
-        img.onload = function () {
-            const colorData = downsampleAndAnalyzeColors(img);
-            drawColorWheel();  // Reset the color wheel
-            updateColorWheel(colorData);
-        }
-    });
+    fetch(flaskApiEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ imageURL: imageUrl })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.dataURL) {
+                const img = new Image();
+                img.src = data.dataURL;
+                img.onload = function () {
+                    const colorData = downsampleAndAnalyzeColors(img);
+                    drawColorWheel();  // Reset the color wheel
+                    updateColorWheel(colorData);
+                }
+            } else {
+                console.error("Error:", data.error);
+            }
+        })
+        .catch(error => {
+            console.error("Network Error:", error);
+        });
 }
+
 
 // Downsample and analyze colors from an image
 function downsampleAndAnalyzeColors(img) {
