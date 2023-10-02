@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import requests
+import base64
 
 app = Flask(__name__)
 
