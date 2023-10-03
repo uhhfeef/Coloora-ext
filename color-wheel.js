@@ -157,8 +157,8 @@ function sendImageForAnalysis(imageUrl) {
     console.log("Sending image URL to Flask API:", imageUrl);
 
     // Endpoint where the Flask API is running.
-    const flaskApiEndpoint = "http://localhost:5000/fetch-image";
-    // const flaskApiEndpoint = "https://coloora.as.r.appspot.com/fetch-image";
+    // const flaskApiEndpoint = "http://localhost:5000/fetch-image";
+    const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image";
 
 
     fetch(flaskApiEndpoint, {

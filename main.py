@@ -2,9 +2,12 @@ from flask import Flask, request, jsonify, make_response
 import requests
 import base64
 from flask_cors import CORS
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-CORS(app, resources={r"/fetch-image": {"origins": "*"}})
+CORS(app, resources={r"/fetch-image": {"origins": "https://www.pinterest.com"}})
 
 
 @app.route("/")
@@ -59,6 +62,17 @@ def fetch_image():
             response = make_response(
                 jsonify({"success": False, "error": "Failed to fetch image."}), 500
             )
+        except Exception as e:
+            response = make_response(
+                jsonify(
+                    {
+                        "success": False,
+                        "error": f"An unexpected error occurred: {str(e)}",
+                    }
+                ),
+                500,
+            )
+        return response
 
     # Set CORS headers explicitly
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -67,5 +81,12 @@ def fetch_image():
     return response
 
 
+@app.after_request
+def after_request(response):
+    app.logger.debug("Request headers: %s", request.headers)
+    app.logger.debug("Response headers: %s", response.headers)
+    return response
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
