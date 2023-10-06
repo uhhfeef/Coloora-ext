@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     console.log("Received message in background:", message);
 
     if (message.action === "fetchImage") {
-        const corsProxy = "https://cors-anywhere.herokuapp.com/";
+        // const corsProxy = "https://cors-anywhere.herokuapp.com/";
 
         fetch(corsProxy + message.imageUrl)
             .then(response => {

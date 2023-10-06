@@ -288,7 +288,7 @@ function updateColorWheel(colorData) {
                 const avgBrightness = hueData[saturationValue].totalBrightness / hueData[saturationValue].count;
                 ctx.strokeStyle = getColorByAngleAndRadius(angle, saturationValue, avgBrightness);
             } else {
-                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 0.1); // Reduced brightness to 30% for unmatched hues/saturations
+                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 10); // Reduced brightness to 30% for unmatched hues/saturations
             }
 
             ctx.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
