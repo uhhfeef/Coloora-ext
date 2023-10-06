@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify, make_response
 import requests
 import base64
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-CORS(app, resources={r"/fetch-image": {"origins": "https://www.pinterest.com"}})
+CORS(app, resources={r"/fetch-image": {"origins": "*"}})
 
 
 @app.route("/")
@@ -16,6 +16,7 @@ def index():
 
 
 @app.route("/fetch-image", methods=["POST", "OPTIONS"])
+@cross_origin()
 def fetch_image():
     # Handle the OPTIONS request for preflight
     if request.method == "OPTIONS":
