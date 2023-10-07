@@ -7,7 +7,6 @@ let center;
 let radius;
 let imageUrlInput = document.getElementById('imageUrl');
 let analyzeButton = document.getElementById('analyzeButton');
-const corsProxy = "https://cors-anywhere.herokuapp.com/";
 
 // Initialization: Setting up the UI
 function initializeUI() {
@@ -155,6 +154,7 @@ function analyzeImage(imageUrl) {
 
 function sendImageForAnalysis(imageUrl) {
     console.log("Sending image URL to Flask API:", imageUrl);
+    showLoadingGif();
 
     // Endpoint where the Flask API is running.
     // const flaskApiEndpoint = "http://localhost:5000/fetch-image";
@@ -288,12 +288,55 @@ function updateColorWheel(colorData) {
                 const avgBrightness = hueData[saturationValue].totalBrightness / hueData[saturationValue].count;
                 ctx.strokeStyle = getColorByAngleAndRadius(angle, saturationValue, avgBrightness);
             } else {
-                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 10); // Reduced brightness to 30% for unmatched hues/saturations
+                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 10); // Reduced brightness to 10% for unmatched hues/saturations
             }
 
             ctx.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
             ctx.stroke();
         }
+    }
+    hideLoadingGif();
+}
+
+function showLoadingGif() {
+    console.log("entering showLoadingGif");
+
+    const colorWheelContainer = document.getElementById('colorWheelContainer');
+    const colorWheelElement = document.getElementById('colorWheel');
+
+    const loadingGif = document.createElement('img');
+    loadingGif.id = 'extensionLoadingGif';
+    loadingGif.src = chrome.runtime.getURL('loading-bar.gif');
+
+    loadingGif.width = 50;
+    loadingGif.height = 50;
+
+    loadingGif.style.display = 'block';
+    loadingGif.style.position = 'absolute';
+
+    // Calculate the center position of the canvas
+    const canvasRect = colorWheelElement.getBoundingClientRect();
+    const containerRect = colorWheelContainer.getBoundingClientRect();
+
+    // Adjust gif's position based on canvas's position
+    loadingGif.style.left = `${canvasRect.left - containerRect.left + (canvas.width / 2) - (loadingGif.width / 2)}px`;
+    loadingGif.style.top = `${canvasRect.top - containerRect.top + (canvas.height / 2) - (loadingGif.height / 2)}px`;
+
+    loadingGif.style.zIndex = '9999'; // Ensure it's on top
+
+    colorWheelContainer.appendChild(loadingGif);
+
+    console.log("GIF appended");
+    console.log(chrome.runtime.getURL('loading-bar.gif'));
+}
+
+
+
+function hideLoadingGif() {
+    console.log("done loading")
+    const gif = document.getElementById('extensionLoadingGif');
+    if (gif) {
+        gif.remove();
     }
 }
 

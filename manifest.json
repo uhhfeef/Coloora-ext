@@ -31,5 +31,15 @@
     "permissions": [
         "activeTab",
         "scripting"
+    ],
+    "web_accessible_resources": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "resources": [
+                "loading-bar.gif"
+            ]
+        }
     ]
 }
