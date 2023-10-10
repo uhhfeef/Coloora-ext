@@ -137,6 +137,10 @@ function extractImageFromPage(url) {
 
 // Analyze image function: Fetch, downsample, analyze, and draw
 function analyzeImage(imageUrl) {
+    if (!imageUrl) {
+        shakeElement(imageUrlInput);
+        return; // Terminate the function
+    }
     imageUrlInput.value = '';
 
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)$/)) {
@@ -145,6 +149,7 @@ function analyzeImage(imageUrl) {
                 sendImageForAnalysis(directImageUrl);
             })
             .catch(error => {
+                shakeElement(imageUrlInput);
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
@@ -330,14 +335,39 @@ function showLoadingGif() {
     console.log(chrome.runtime.getURL('loading-bar.gif'));
 }
 
-
-
 function hideLoadingGif() {
     console.log("done loading")
     const gif = document.getElementById('extensionLoadingGif');
     if (gif) {
         gif.remove();
     }
+}
+
+function shakeElement(element) {
+    console.log('Shake function called');
+    let shakes = 5;
+    let distance = 2; // in pixels
+
+    const originalMarginLeft = parseInt(window.getComputedStyle(element).marginLeft, 10) || 0;
+    const originalMarginRight = parseInt(window.getComputedStyle(element).marginRight, 10) || 0;
+
+    function animateShake() {
+        if (shakes === 0) {
+            element.style.marginLeft = `${originalMarginLeft}px`; // Reset to original margins
+            element.style.marginRight = `${originalMarginRight}px`;
+            return;
+        }
+
+        // Alternate direction for shaking effect
+        const offset = (shakes % 2 === 0) ? distance : -distance;
+        element.style.marginLeft = `${originalMarginLeft + offset}px`;
+        element.style.marginRight = `${originalMarginRight - offset}px`;
+
+        shakes -= 1;
+        setTimeout(animateShake, 50);
+    }
+
+    animateShake();
 }
 
 // Adopt Content Script Behavior
