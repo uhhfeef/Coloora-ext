@@ -1,3 +1,46 @@
+// const FLASK_ENDPOINT = 'http://localhost:5000/send-analytics'; // demo
+const FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+
+// Works here
+async function getOrCreateClientId() {
+    const result = await chrome.storage.local.get('clientId');
+    console.log('inside getor create')
+
+    let clientId = result.clientId;
+    if (!clientId) {
+        // Generate a unique client ID, the actual value is not relevant
+        clientId = self.crypto.randomUUID();
+        console.log('generated clientid')
+        await chrome.storage.local.set({ clientId });
+    }
+    console.log(clientId)
+    return clientId;
+}
+
+async function sendInitialEvent() {
+    try {
+        fetch(
+            FLASK_ENDPOINT,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    client_id: await getOrCreateClientId(),
+                    event_name: 'button_clicked',
+                    event_params: {
+                        id: 'analyzeButton',
+                    },
+                }),
+            }
+        );
+    }
+    catch (error) {
+        console.error("Error sending data to Flask server:", error);
+    }
+}
+
 console.log("Content script loaded!");
 // Constants and DOM elements
 const canvas = document.createElement("canvas");
@@ -146,6 +189,7 @@ function analyzeImage(imageUrl) {
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)$/)) {
         extractImageFromPage(imageUrl)
             .then(directImageUrl => {
+                sendInitialEvent(); // Calling the async function immediately
                 sendImageForAnalysis(directImageUrl);
             })
             .catch(error => {
@@ -162,7 +206,7 @@ function sendImageForAnalysis(imageUrl) {
     showLoadingGif();
 
     // Endpoint where the Flask API is running.
-    // const flaskApiEndpoint = "http://localhost:5000/fetch-image";
+    // const flaskApiEndpoint = "http://localhost:5000/fetch-image"; //demo
     const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image";
 
 
@@ -376,4 +420,5 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         initializeUI();
     }
 });
+
 

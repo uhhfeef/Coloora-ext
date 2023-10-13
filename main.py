@@ -6,8 +6,12 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
+GA_ENDPOINT = "https://www.google-analytics.com/mp/collect"
+MEASUREMENT_ID = "G-2BBSSZBKEP"
+API_SECRET = "TUHix_4URgGljI971eQi2A"
+
 app = Flask(__name__)
-CORS(app, resources={r"/fetch-image": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 @app.route("/")
@@ -16,7 +20,7 @@ def index():
 
 
 @app.route("/fetch-image", methods=["POST", "OPTIONS"])
-@cross_origin()
+@cross_origin()  # Necessary
 def fetch_image():
     # Handle the OPTIONS request for preflight
     if request.method == "OPTIONS":
@@ -80,6 +84,37 @@ def fetch_image():
     response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type"
     return response
+
+
+@app.route("/send-analytics", methods=["POST"])
+@cross_origin()
+def send_analytics():
+    payload = request.json
+    client_id = payload.get("client_id")
+    event_name = payload.get("event_name")
+    event_params = payload.get("event_params")
+
+    if not client_id or not event_name:
+        return jsonify({"success": False, "error": "Missing required parameters."}), 400
+
+    try:
+        response = requests.post(
+            f"{GA_ENDPOINT}?measurement_id={MEASUREMENT_ID}&api_secret={API_SECRET}",
+            json={
+                "client_id": client_id,
+                "events": [{"name": event_name, "params": event_params}],
+            },
+        )
+        response.raise_for_status()
+        return jsonify({"success": True})
+
+    except requests.RequestException:
+        return (
+            jsonify(
+                {"success": False, "error": "Failed to send data to Google Analytics."}
+            ),
+            500,
+        )
 
 
 @app.after_request

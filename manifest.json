@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Coloora",
-    "version": "0.0.5",
+    "version": "0.0.7",
     "description": "Analyse colors",
     "icons": {
         "16": "images/coloora-16.png",
@@ -30,7 +30,8 @@
     },
     "permissions": [
         "activeTab",
-        "scripting"
+        "scripting",
+        "storage"
     ],
     "web_accessible_resources": [
         {
