@@ -28,7 +28,7 @@ async function sendInitialEvent() {
                 },
                 body: JSON.stringify({
                     client_id: await getOrCreateClientId(),
-                    event_name: 'button_clicked',
+                    event_name: 'analyze_button_clicked',
                     event_params: {
                         id: 'analyzeButton',
                     },
