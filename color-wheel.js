@@ -186,7 +186,7 @@ function analyzeImage(imageUrl) {
     }
     imageUrlInput.value = '';
 
-    if (!imageUrl.match(/\.(jpeg|jpg|gif|png)$/)) {
+    if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
             .then(directImageUrl => {
                 sendInitialEvent(); // Calling the async function immediately
