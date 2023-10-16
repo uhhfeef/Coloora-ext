@@ -41,7 +41,7 @@ async function sendInitialEvent() {
     }
 }
 
-console.log("Content script loaded!");
+console.log("Color wheel loaded!");
 // Constants and DOM elements
 const canvas = document.createElement("canvas");
 canvas.id = "colorWheel";
