@@ -17,11 +17,11 @@ function initializeUI() {
     container.style.border = '1px solid #000';
     container.style.padding = '20px 30px 10px 30px';
     container.style.paddingRight = '30px';  // Set paddingRight after the general padding
-    container.style.paddingLeft = '30px';  // Set paddingRight after the general padding\
+    container.style.paddingLeft = '30px';  
     container.style.borderRadius = '8px';
     container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.5)';
     container.style.display = 'flex';
-    container.style.flexDirection = 'column'; // Stack children vertically    
+    container.style.flexDirection = 'column'; // Stack children vertically 
 
     // Create close button (acts like a header)
     const closeButton = document.createElement('button');
