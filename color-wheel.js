@@ -30,7 +30,7 @@ async function sendInitialEvent() {
                     client_id: await getOrCreateClientId(),
                     event_name: 'analyze_button_clicked',
                     event_params: {
-                        id: 'analyzeButton',
+                        id: 'analyzeButtonWheel',
                     },
                 }),
             }
@@ -48,11 +48,11 @@ canvas.id = "colorWheel";
 let ctx;
 let center;
 let radius;
-let imageUrlInput = document.getElementById('imageUrl');
-let analyzeButton = document.getElementById('analyzeButton');
+let imageUrlInputWheel = document.getElementById('imageUrl');
+let analyzeButtonWheel = document.getElementById('analyzeButtonWheel');
 
 // Initialization: Setting up the UI
-function initializeUI() {
+function initializeUIWheel() {
     console.log("Initializing UI...");
     // Create a container for the color wheel
     const container = document.createElement('div');
@@ -143,22 +143,22 @@ function initializeUI() {
     inputContainer.style.marginBottom = '10px';
 
     // Create input for image URL
-    imageUrlInput = document.createElement('input');
-    imageUrlInput.id = 'imageUrl';
-    imageUrlInput.type = 'text';
-    imageUrlInput.placeholder = 'Enter image URL';
-    imageUrlInput.style.flex = '1';
-    imageUrlInput.style.marginRight = '10px';
-    inputContainer.appendChild(imageUrlInput);
+    imageUrlInputWheel = document.createElement('input');
+    imageUrlInputWheel.id = 'imageUrl';
+    imageUrlInputWheel.type = 'text';
+    imageUrlInputWheel.placeholder = 'Enter image URL';
+    imageUrlInputWheel.style.flex = '1';
+    imageUrlInputWheel.style.marginRight = '10px';
+    inputContainer.appendChild(imageUrlInputWheel);
 
     // Create analyze button
-    analyzeButton = document.createElement('button');
-    analyzeButton.id = 'analyzeButton';
-    analyzeButton.innerText = 'Analyze Image';
-    analyzeButton.onclick = function () {
-        analyzeImage(imageUrlInput.value);
+    analyzeButtonWheel = document.createElement('button');
+    analyzeButtonWheel.id = 'analyzeButtonWheel';
+    analyzeButtonWheel.innerText = 'Analyze Image';
+    analyzeButtonWheel.onclick = function () {
+        analyzeImageWheel(imageUrlInputWheel.value);
     };
-    inputContainer.appendChild(analyzeButton);
+    inputContainer.appendChild(analyzeButtonWheel);
 
     // Append inputContainer to main container
     container.appendChild(inputContainer);
@@ -179,29 +179,29 @@ function extractImageFromPage(url) {
 }
 
 // Analyze image function: Fetch, downsample, analyze, and draw
-function analyzeImage(imageUrl) {
+function analyzeImageWheel(imageUrl) {
     if (!imageUrl) {
-        shakeElement(imageUrlInput);
+        shakeElement(imageUrlInputWheel);
         return; // Terminate the function
     }
-    imageUrlInput.value = '';
+    imageUrlInputWheel.value = '';
 
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
             .then(directImageUrl => {
                 sendInitialEvent(); // Calling the async function immediately
-                sendImageForAnalysis(directImageUrl);
+                sendImageForAnalysisWheel(directImageUrl);
             })
             .catch(error => {
-                shakeElement(imageUrlInput);
+                shakeElement(imageUrlInputWheel);
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
-        sendImageForAnalysis(imageUrl);
+        sendImageForAnalysisWheel(imageUrl);
     }
 }
 
-function sendImageForAnalysis(imageUrl) {
+function sendImageForAnalysisWheel(imageUrl) {
     console.log("Sending image URL to Flask API:", imageUrl);
     showLoadingGif();
 
@@ -417,7 +417,7 @@ function shakeElement(element) {
 // Adopt Content Script Behavior
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === "showColorWheel") {
-        initializeUI();
+        initializeUIWheel();
     }
 });
 

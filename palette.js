@@ -1,9 +1,9 @@
 // Initialization: Setting up the UI
 console.log("palette  loaded!");
-let imageUrlInput = document.getElementById('imageUrl');
+let imageUrlInputPalette = document.getElementById('imageUrl');
 let analyzeButton = document.getElementById('analyzeButton');
 
-function initializeUI() {
+function initializeUIPalette() {
     console.log("Initializing UI...");
     // Create a container for the color wheel
     const container = document.createElement('div');
@@ -17,7 +17,7 @@ function initializeUI() {
     container.style.border = '1px solid #000';
     container.style.padding = '20px 30px 10px 30px';
     container.style.paddingRight = '30px';  // Set paddingRight after the general padding
-    container.style.paddingLeft = '30px';  
+    container.style.paddingLeft = '30px';
     container.style.borderRadius = '8px';
     container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.5)';
     container.style.display = 'flex';
@@ -26,7 +26,7 @@ function initializeUI() {
     // Create close button (acts like a header)
     const closeButton = document.createElement('button');
     closeButton.innerText = 'X';
-    closeButton.style.position = 'absolute'; 
+    closeButton.style.position = 'absolute';
     closeButton.style.top = '5px'; // Position from the top
     closeButton.style.right = '5px'; // Position from the right
     closeButton.style.margin = '0 auto'; // Center the button horizontally
@@ -110,20 +110,20 @@ function initializeUI() {
     inputContainer.style.marginBottom = '10px';
 
     // Create input for image URL
-    imageUrlInput = document.createElement('input');
-    imageUrlInput.id = 'imageUrl';
-    imageUrlInput.type = 'text';
-    imageUrlInput.placeholder = 'Enter image URL';
-    imageUrlInput.style.flex = '1';
-    imageUrlInput.style.marginRight = '10px';
-    inputContainer.appendChild(imageUrlInput);
+    imageUrlInputPalette = document.createElement('input');
+    imageUrlInputPalette.id = 'imageUrl';
+    imageUrlInputPalette.type = 'text';
+    imageUrlInputPalette.placeholder = 'Enter image URL';
+    imageUrlInputPalette.style.flex = '1';
+    imageUrlInputPalette.style.marginRight = '10px';
+    inputContainer.appendChild(imageUrlInputPalette);
 
     // Create analyze button
     analyzeButton = document.createElement('button');
     analyzeButton.id = 'analyzeButton';
     analyzeButton.innerText = 'Analyze Image';
     analyzeButton.onclick = function () {
-        analyzeImage(imageUrlInput.value);
+        analyzeImage(imageUrlInputPalette.value);
     };
     inputContainer.appendChild(analyzeButton);
 
@@ -150,10 +150,10 @@ function extractImageFromPage(url) {
 // Analyze image function: Fetch, downsample, analyze, and draw
 function analyzeImage(imageUrl) {
     if (!imageUrl) {
-        shakeElement(imageUrlInput);
+        shakeElement(imageUrlInputPalette);
         return; // Terminate the function
     }
-    imageUrlInput.value = '';
+    imageUrlInputPalette.value = '';
 
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
@@ -162,7 +162,7 @@ function analyzeImage(imageUrl) {
                 sendImageForAnalysis(directImageUrl);
             })
             .catch(error => {
-                shakeElement(imageUrlInput);
+                shakeElement(imageUrlInputPalette);
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
@@ -200,7 +200,7 @@ function sendImageForAnalysis(imageUrl) {
                 console.log('entered error')
                 console.error("Error:", data.error);
             }
-        })    
+        })
         .catch(error => {
             console.error("Network Error:", error);
         });
@@ -236,6 +236,6 @@ function shakeElement(element) {
 // Adopt Content Script Behavior
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === "generatePalette") {
-        initializeUI();
+        initializeUIPalette();
     }
 });
