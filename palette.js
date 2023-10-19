@@ -1,7 +1,49 @@
+var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+
+// Works here
+async function getOrCreateClientId() {
+    const result = await chrome.storage.local.get('clientId');
+    console.log('inside getor create')
+
+    let clientId = result.clientId;
+    if (!clientId) {
+        // Generate a unique client ID, the actual value is not relevant
+        clientId = self.crypto.randomUUID();
+        console.log('generated clientid')
+        await chrome.storage.local.set({ clientId });
+    }
+    console.log(clientId)
+    return clientId;
+}
+
+async function sendInitialEvent() {
+    try {
+        fetch(
+            FLASK_ENDPOINT,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    client_id: await getOrCreateClientId(),
+                    event_name: 'palette_button_clicked',
+                    event_params: {
+                        id: 'analyzeButtonPalette',
+                    },
+                }),
+            }
+        );
+    }
+    catch (error) {
+        console.error("Error sending data to Flask server:", error);
+    }
+}
+
 // Initialization: Setting up the UI
 console.log("palette  loaded!");
 let imageUrlInputPalette = document.getElementById('imageUrl');
-let analyzeButton = document.getElementById('analyzeButton');
+let analyzeButtonPalette = document.getElementById('analyzeButtonPalette');
 
 function initializeUIPalette() {
     console.log("Initializing UI...");
@@ -119,13 +161,13 @@ function initializeUIPalette() {
     inputContainer.appendChild(imageUrlInputPalette);
 
     // Create analyze button
-    analyzeButton = document.createElement('button');
-    analyzeButton.id = 'analyzeButton';
-    analyzeButton.innerText = 'Analyze Image';
-    analyzeButton.onclick = function () {
+    analyzeButtonPalette = document.createElement('button');
+    analyzeButtonPalette.id = 'analyzeButtonPalette';
+    analyzeButtonPalette.innerText = 'Analyze Image';
+    analyzeButtonPalette.onclick = function () {
         analyzeImage(imageUrlInputPalette.value);
     };
-    inputContainer.appendChild(analyzeButton);
+    inputContainer.appendChild(analyzeButtonPalette);
 
     // Append inputContainer to main container
     container.appendChild(inputContainer);
@@ -158,7 +200,7 @@ function analyzeImage(imageUrl) {
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
             .then(directImageUrl => {
-                // sendInitialEvent(); // Calling the async function immediately
+                sendInitialEvent(); // Calling the async function immediately
                 sendImageForAnalysis(directImageUrl);
             })
             .catch(error => {
@@ -166,6 +208,7 @@ function analyzeImage(imageUrl) {
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
+        sendInitialEvent(); // Calling the async function immediately
         sendImageForAnalysis(imageUrl);
     }
 }
@@ -175,8 +218,8 @@ function sendImageForAnalysis(imageUrl) {
     // showLoadingGif();
 
     // Endpoint where the Flask API is running.
-    const flaskApiEndpoint = "http://127.0.0.1:5000/generate-palette"; //demo
-    // const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/generate-palette";
+    // const flaskApiEndpoint = "http://127.0.0.1:5000/generate-palette"; //demo
+    const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/generate-palette";
 
 
     fetch(flaskApiEndpoint, {

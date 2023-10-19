@@ -1,5 +1,5 @@
-// const FLASK_ENDPOINT = 'http://localhost:5000/send-analytics'; // demo
-const FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// const FLASK_ENDPOINT = 'http://localhost:5000/send-analytics'; //demo
+var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -28,13 +28,14 @@ async function sendInitialEvent() {
                 },
                 body: JSON.stringify({
                     client_id: await getOrCreateClientId(),
-                    event_name: 'analyze_button_clicked',
+                    event_name: 'wheel_button_clicked',
                     event_params: {
                         id: 'analyzeButtonWheel',
                     },
                 }),
             }
         );
+        console.log("event sent")
     }
     catch (error) {
         console.error("Error sending data to Flask server:", error);
@@ -197,6 +198,7 @@ function analyzeImageWheel(imageUrl) {
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
+        sendInitialEvent(); // Calling the async function immediately
         sendImageForAnalysisWheel(imageUrl);
     }
 }
@@ -208,7 +210,6 @@ function sendImageForAnalysisWheel(imageUrl) {
     // Endpoint where the Flask API is running.
     // const flaskApiEndpoint = "http://localhost:5000/fetch-image"; //demo
     const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image";
-
 
     fetch(flaskApiEndpoint, {
         method: 'POST',
