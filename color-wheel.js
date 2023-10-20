@@ -1,4 +1,3 @@
-// const FLASK_ENDPOINT = 'http://localhost:5000/send-analytics'; //demo
 var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
@@ -17,7 +16,7 @@ async function getOrCreateClientId() {
     return clientId;
 }
 
-async function sendInitialEvent() {
+async function sendInitialEvent(eventName, elementId) {
     try {
         fetch(
             FLASK_ENDPOINT,
@@ -28,19 +27,21 @@ async function sendInitialEvent() {
                 },
                 body: JSON.stringify({
                     client_id: await getOrCreateClientId(),
-                    event_name: 'wheel_button_clicked',
+                    event_name: eventName,
                     event_params: {
-                        id: 'analyzeButtonWheel',
+                        id: elementId,
                     },
                 }),
             }
         );
-        console.log("event sent")
+        console.log("event sent");
     }
     catch (error) {
         console.error("Error sending data to Flask server:", error);
     }
 }
+
+sendInitialEvent('color_wheel_loaded', 'colorWheelContainer');
 
 console.log("Content script loaded!");
 // Constants and DOM elements
@@ -190,7 +191,7 @@ function analyzeImageWheel(imageUrl) {
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
             .then(directImageUrl => {
-                sendInitialEvent(); // Calling the async function immediately
+                sendInitialEvent("color_wheel_analysis", "analyzeButtonWheel"); // Calling the async function immediately
                 sendImageForAnalysisWheel(directImageUrl);
             })
             .catch(error => {
@@ -198,7 +199,7 @@ function analyzeImageWheel(imageUrl) {
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
-        sendInitialEvent(); // Calling the async function immediately
+        sendInitialEvent("color_wheel_analysis", "analyzeButtonWheel"); // Calling the async function immediately
         sendImageForAnalysisWheel(imageUrl);
     }
 }

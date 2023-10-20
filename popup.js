@@ -11,3 +11,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentVersion = manifestData.version;
     document.getElementById("version").textContent = currentVersion;
 });
+
+// document.getElementById('featureRequestLink').addEventListener('click', function () {
+//     chrome.windows.create({
+//         url: chrome.runtime.getURL('featureRequest.html'),
+//         type: 'popup',
+//         width: 300,
+//         height: 300
+//     });
+// });

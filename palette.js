@@ -16,7 +16,7 @@ async function getOrCreateClientId() {
     return clientId;
 }
 
-async function sendInitialEvent() {
+async function sendInitialEvent(eventName, elementId) {
     try {
         fetch(
             FLASK_ENDPOINT,
@@ -27,18 +27,21 @@ async function sendInitialEvent() {
                 },
                 body: JSON.stringify({
                     client_id: await getOrCreateClientId(),
-                    event_name: 'palette_button_clicked',
+                    event_name: eventName,
                     event_params: {
-                        id: 'analyzeButtonPalette',
+                        id: elementId,
                     },
                 }),
             }
         );
+        console.log("event sent");
     }
     catch (error) {
         console.error("Error sending data to Flask server:", error);
     }
 }
+
+sendInitialEvent('palette_loaded', 'colorWheelContainer');
 
 // Initialization: Setting up the UI
 console.log("palette  loaded!");
@@ -49,7 +52,7 @@ function initializeUIPalette() {
     console.log("Initializing UI...");
     // Create a container for the color wheel
     const container = document.createElement('div');
-    container.id = 'colorWheelContainer';
+    container.id = 'paletteContainer';
     container.style.position = 'fixed';
     container.style.top = '10%';
     container.style.left = '50%';
@@ -200,7 +203,7 @@ function analyzeImage(imageUrl) {
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
             .then(directImageUrl => {
-                sendInitialEvent(); // Calling the async function immediately
+                sendInitialEvent("palette_generated", "analyzeButtonPalette"); // Calling the async function immediately
                 sendImageForAnalysis(directImageUrl);
             })
             .catch(error => {
@@ -208,7 +211,7 @@ function analyzeImage(imageUrl) {
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
-        sendInitialEvent(); // Calling the async function immediately
+        sendInitialEvent("palette_generated", "analyzeButtonPalette"); // Calling the async function immediately
         sendImageForAnalysis(imageUrl);
     }
 }
