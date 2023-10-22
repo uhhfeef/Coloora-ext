@@ -41,7 +41,7 @@ async function sendInitialEvent(eventName, elementId) {
     }
 }
 
-sendInitialEvent('palette_loaded', 'colorWheelContainer');
+sendInitialEvent('palette_loaded', 'paletteContainer');
 
 // Initialization: Setting up the UI
 console.log("palette  loaded!");

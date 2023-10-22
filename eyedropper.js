@@ -41,18 +41,19 @@ async function sendInitialEvent(eventName, elementId) {
     }
 }
 
-sendInitialEvent('palette_loaded', 'colorWheelContainer');
+// sendInitialEvent('custom_palette_loaded', 'eyedropperContainer');
 
 // Initialization: Setting up the UI
-console.log("palette  loaded!");
-let imageUrlInputPalette = document.getElementById('imageUrl');
-let analyzeButtonPalette = document.getElementById('analyzeButtonPalette');
+console.log("eyedropper base  loaded!");
+let imageUrlInputEyedropper = document.getElementById('imageUrl');
+let analyzeButtonEyedropper = document.getElementById('analyzeButtonEyedropper');
 
 function initializeEyedropper() {
     console.log("Initializing UI...");
-    // Create a container for the color wheel
+
+    // Create a main container
     const container = document.createElement('div');
-    container.id = 'paletteContainer';
+    container.id = 'eyedropperContainer';
     container.style.position = 'fixed';
     container.style.top = '10%';
     container.style.left = '50%';
@@ -60,21 +61,18 @@ function initializeEyedropper() {
     container.style.zIndex = '99999';
     container.style.backgroundColor = '#FFF';
     container.style.border = '1px solid #000';
-    container.style.padding = '20px 30px 10px 30px';
-    container.style.paddingRight = '30px';  // Set paddingRight after the general padding
-    container.style.paddingLeft = '30px';
+    container.style.padding = '20px';
     container.style.borderRadius = '8px';
     container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.5)';
     container.style.display = 'flex';
-    container.style.flexDirection = 'column'; // Stack children vertically 
+    container.style.justifyContent = 'space-between'; // To place child containers side by side
 
     // Create close button (acts like a header)
     const closeButton = document.createElement('button');
     closeButton.innerText = 'X';
     closeButton.style.position = 'absolute';
-    closeButton.style.top = '5px'; // Position from the top
-    closeButton.style.right = '5px'; // Position from the right
-    closeButton.style.margin = '0 auto'; // Center the button horizontally
+    closeButton.style.top = '5px';
+    closeButton.style.right = '5px';
     closeButton.style.background = 'red';
     closeButton.style.color = 'white';
     closeButton.style.border = 'none';
@@ -87,7 +85,72 @@ function initializeEyedropper() {
     };
     container.appendChild(closeButton);
 
-    // Drag and drop
+    // Create a container for image, input link, and button
+    const imageInputContainer = document.createElement('div');
+    imageInputContainer.style.display = 'flex';
+    imageInputContainer.style.flexDirection = 'column';
+    imageInputContainer.style.flex = '1';
+    imageInputContainer.style.marginRight = '20px'; // Space between the two child containers
+
+    // Create an image container
+    const imageContainer = document.createElement('div');
+    imageContainer.id = 'imageContainer';
+    imageContainer.style.marginTop = '10px';
+    imageContainer.style.backgroundColor = 'transparent';
+    imageInputContainer.appendChild(imageContainer);
+
+    // Prevent mousedown event from propagating from the image to the container
+    imageContainer.addEventListener('mousedown', function (e) {
+        if (e.target.tagName === 'IMG') {
+            e.stopPropagation();
+        }
+    });
+
+    // Create a div for input and button to make them inline
+    const inputContainer = document.createElement('div');
+    inputContainer.style.display = 'flex';
+    inputContainer.style.justifyContent = 'center';
+    inputContainer.style.marginTop = 'auto';
+
+    // Create input for image URL
+    imageUrlInputEyedropper = document.createElement('input');
+    imageUrlInputEyedropper.id = 'imageUrl';
+    imageUrlInputEyedropper.type = 'text';
+    imageUrlInputEyedropper.placeholder = 'Enter image URL';
+    imageUrlInputEyedropper.style.flex = '1';
+    imageUrlInputEyedropper.style.marginRight = '10px';
+    inputContainer.appendChild(imageUrlInputEyedropper);
+
+    // Create analyze button
+    const analyzeButtonEyedropper = document.createElement('button');
+    analyzeButtonEyedropper.id = 'analyzeButtonEyedropper';
+    analyzeButtonEyedropper.innerText = 'Analyze Image';
+    analyzeButtonEyedropper.onclick = function () {
+        analyzeImage(imageUrlInputEyedropper.value);
+    };
+    inputContainer.appendChild(analyzeButtonEyedropper);
+
+    // Append inputContainer to imageInputContainer
+    imageInputContainer.appendChild(inputContainer);
+    container.appendChild(imageInputContainer);
+
+    // Create a container for color boxes
+    const colorBoxesContainer = document.createElement('div');
+    colorBoxesContainer.id = 'colorBoxesContainer';
+    colorBoxesContainer.style.display = 'grid';
+    colorBoxesContainer.style.gridTemplateColumns = 'repeat(5, 40px)';
+    colorBoxesContainer.style.gap = '10px';
+    colorBoxesContainer.style.marginTop = '20px';
+    container.appendChild(colorBoxesContainer);
+
+    // Append main container to the body
+    document.body.appendChild(container);
+
+    initializeDragAndDrop(container);
+    activateEyedropperForImage();
+}
+
+function initializeDragAndDrop(container) {
     let isDragging = false;
     let initialMouseX, initialMouseY;
     let initialContainerX, initialContainerY;
@@ -100,12 +163,11 @@ function initializeEyedropper() {
         initialMouseY = e.clientY;
 
         // Record the initial position of the container
-        // Adjusting for the transform offset
         initialContainerX = container.getBoundingClientRect().left + (container.offsetWidth / 2);
         initialContainerY = container.getBoundingClientRect().top;
 
         window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
+        document.addEventListener('mouseup', onMouseUp); // Change this line
     });
 
     function onMouseMove(e) {
@@ -115,46 +177,16 @@ function initializeEyedropper() {
         let dx = e.clientX - initialMouseX;
         let dy = e.clientY - initialMouseY;
 
-        // Apply the movement to the container's position, adjusting for the transform offset
+        // Apply the movement to the container's position
         container.style.left = `${initialContainerX + dx}px`;
         container.style.top = `${initialContainerY + dy}px`;
     }
 
     function onMouseUp() {
         window.removeEventListener('mousemove', onMouseMove);
-        window.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener('mouseup', onMouseUp); // And this line
         isDragging = false;
     }
-
-    // Create a div for input and button to make them inline
-    const inputContainer = document.createElement('div');
-    inputContainer.style.display = 'flex';
-    inputContainer.style.justifyContent = 'center';
-    inputContainer.style.marginTop = 'auto';
-    inputContainer.style.marginBottom = '10px';
-
-    // Create input for image URL
-    imageUrlInputPalette = document.createElement('input');
-    imageUrlInputPalette.id = 'imageUrl';
-    imageUrlInputPalette.type = 'text';
-    imageUrlInputPalette.placeholder = 'Enter image URL';
-    imageUrlInputPalette.style.flex = '1';
-    imageUrlInputPalette.style.marginRight = '10px';
-    inputContainer.appendChild(imageUrlInputPalette);
-
-    // Create analyze button
-    analyzeButtonPalette = document.createElement('button');
-    analyzeButtonPalette.id = 'analyzeButtonPalette';
-    analyzeButtonPalette.innerText = 'Analyze Image';
-    analyzeButtonPalette.onclick = function () {
-        analyzeImage(imageUrlInputPalette.value);
-    };
-    inputContainer.appendChild(analyzeButtonPalette);
-
-    // Append inputContainer to main container
-    container.appendChild(inputContainer);
-    document.body.appendChild(container);
-
 }
 
 function extractImageFromPage(url) {
@@ -174,35 +206,34 @@ function extractImageFromPage(url) {
 // Analyze image function: Fetch, downsample, analyze, and draw
 function analyzeImage(imageUrl) {
     if (!imageUrl) {
-        shakeElement(imageUrlInputPalette);
+        shakeElement(imageUrlInputEyedropper);
         return; // Terminate the function
     }
-    imageUrlInputPalette.value = '';
+    imageUrlInputEyedropper.value = '';
 
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
             .then(directImageUrl => {
-                sendInitialEvent("palette_generated", "analyzeButtonPalette"); // Calling the async function immediately
-                sendImageForAnalysis(directImageUrl);
+                // sendInitialEvent("palette_generated", "analyzeButtonEyedropper"); // Calling the async function immediately
+                sendImageForAnalysisEyedropper(directImageUrl);
             })
             .catch(error => {
-                shakeElement(imageUrlInputPalette);
+                shakeElement(imageUrlInputEyedropper);
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
-        sendInitialEvent("palette_generated", "analyzeButtonPalette"); // Calling the async function immediately
-        sendImageForAnalysis(imageUrl);
+        // sendInitialEvent("palette_generated", "analyzeButtonEyedropper"); // Calling the async function immediately
+        sendImageForAnalysisEyedropper(imageUrl);
     }
 }
 
-function sendImageForAnalysis(imageUrl) {
+function sendImageForAnalysisEyedropper(imageUrl) {
     console.log("Sending image URL to Flask API:", imageUrl);
     // showLoadingGif();
 
     // Endpoint where the Flask API is running.
-    // const flaskApiEndpoint = "http://127.0.0.1:5000/generate-palette"; //demo
-    // const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/generate-palette";
-
+    // const flaskApiEndpoint = "http://localhost:5000/fetch-image"; //demo
+    const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image";
 
     fetch(flaskApiEndpoint, {
         method: 'POST',
@@ -213,22 +244,83 @@ function sendImageForAnalysis(imageUrl) {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.palette) {
-                console.log("Generated Palette:");
-                const colorBoxes = document.querySelectorAll('.colorBox');
-                data.palette.forEach((color, index) => {
-                    const rgbColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
-                    console.log(`Color ${index + 1}: ${rgbColor}`);
-                    colorBoxes[index].style.backgroundColor = rgbColor;
-                });
-            } else {
-                console.log('entered error')
+            if (data.success && data.dataURL) {
+                // Create an image element
+                const img = new Image();
+                img.src = data.dataURL;
+                img.onload = function () {
+                    // Calculate the aspect ratio
+                    const aspectRatio = img.naturalWidth / img.naturalHeight;
+
+                    // Get half the viewport height
+                    const halfViewportHeight = window.innerHeight / 2;
+
+                    // Get the image container
+                    const imageContainer = document.getElementById('imageContainer');
+
+                    // If the image's natural height exceeds half the viewport height, adjust its dimensions
+                    if (img.naturalHeight > halfViewportHeight) {
+                        img.height = halfViewportHeight;
+                        img.width = halfViewportHeight * aspectRatio;
+                    } else {
+                        img.width = img.naturalWidth;
+                        img.height = img.naturalHeight;
+                    }
+
+                    // Set the image container dimensions
+                    imageContainer.style.width = `${img.width}px`;
+                    imageContainer.style.height = `${img.height}px`;
+
+                    // Remove any previous images
+                    imageContainer.innerHTML = '';
+
+                    // Append the new image
+                    imageContainer.appendChild(img);
+                }
+            }
+            else {
                 console.error("Error:", data.error);
             }
         })
         .catch(error => {
             console.error("Network Error:", error);
         });
+}
+
+function activateEyedropperForImage() {
+    const imageContainer = document.getElementById('imageContainer');
+
+    imageContainer.addEventListener('click', function (event) {
+        const img = event.target;
+
+        // Ensure the clicked element is an image
+        if (img instanceof HTMLImageElement) {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+
+            // Get the color of the clicked pixel
+            const x = event.offsetX;
+            const y = event.offsetY;
+            const pixel = ctx.getImageData(x, y, 1, 1).data;
+            console.log(pixel); // This will log [R, G, B, A]
+            const rgb = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+
+            // Create a new color box
+            const colorBox = document.createElement('div');
+            colorBox.style.width = '40px';
+            colorBox.style.height = '40px';
+            colorBox.style.backgroundColor = rgb;
+            colorBox.style.border = '1px solid white'; // White border for the box
+
+            // Append the color box to the container
+            colorBoxesContainer.appendChild(colorBox);
+
+            console.log(rgb);
+        }
+    });
 }
 
 function shakeElement(element) {
