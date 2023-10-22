@@ -6,6 +6,10 @@ document.getElementById('generateColorPaletteBtn').addEventListener('click', fun
     chrome.runtime.sendMessage({ action: "executeColorPaletteScript" });
 });
 
+document.getElementById('eyedropperBtn').addEventListener('click', function () {
+    chrome.runtime.sendMessage({ action: "executeEyedropper" });
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     const manifestData = chrome.runtime.getManifest();
     const currentVersion = manifestData.version;

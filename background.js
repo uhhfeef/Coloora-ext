@@ -28,6 +28,21 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === "executeEyedropper") {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            const tabId = tabs[0].id;
+            chrome.scripting.executeScript({
+                target: { tabId: tabId },
+                files: ['eyedropper.js']
+            }, () => {
+                // After injecting the content script, send the message
+                chrome.tabs.sendMessage(tabId, { action: "createEyedropperBase" });
+            });
+        });
+    }
+});
+
 // chrome.action.onClicked.addListener(function (tab) {
 //     chrome.scripting.executeScript({
 //         target: { tabId: tab.id },
