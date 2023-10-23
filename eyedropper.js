@@ -59,7 +59,7 @@ function initializeEyedropper() {
     container.style.left = '50%';
     container.style.transform = 'translateX(-50%)';
     container.style.zIndex = '99999';
-    container.style.backgroundColor = '#FFF';
+    container.style.backgroundColor = '#2a2a2a';
     container.style.border = '1px solid #000';
     container.style.padding = '20px';
     container.style.borderRadius = '8px';
@@ -90,6 +90,9 @@ function initializeEyedropper() {
     imageInputContainer.style.display = 'flex';
     imageInputContainer.style.flexDirection = 'column';
     imageInputContainer.style.flex = '1';
+    imageInputContainer.style.display = 'flex'; // Added for centering
+    imageInputContainer.style.justifyContent = 'center'; // Center horizontally
+    imageInputContainer.style.alignItems = 'center'; // Center vertically
     imageInputContainer.style.marginRight = '20px'; // Space between the two child containers
 
     // Create an image container
@@ -97,6 +100,7 @@ function initializeEyedropper() {
     imageContainer.id = 'imageContainer';
     imageContainer.style.marginTop = '10px';
     imageContainer.style.backgroundColor = 'transparent';
+    imageContainer.style.paddingBottom= '10px';
     imageInputContainer.appendChild(imageContainer);
 
     // Prevent mousedown event from propagating from the image to the container
@@ -127,6 +131,7 @@ function initializeEyedropper() {
     analyzeButtonEyedropper.innerText = 'Analyze Image';
     analyzeButtonEyedropper.onclick = function () {
         analyzeImage(imageUrlInputEyedropper.value);
+        colorBoxesContainer.style.visibility = 'visible'; 
     };
     inputContainer.appendChild(analyzeButtonEyedropper);
 
@@ -137,10 +142,10 @@ function initializeEyedropper() {
     // Create a container for color boxes
     const colorBoxesContainer = document.createElement('div');
     colorBoxesContainer.id = 'colorBoxesContainer';
-    colorBoxesContainer.style.display = 'grid';
-    colorBoxesContainer.style.gridTemplateColumns = 'repeat(5, 40px)';
-    colorBoxesContainer.style.gap = '10px';
-    colorBoxesContainer.style.marginTop = '20px';
+    colorBoxesContainer.style.gridTemplateColumns = 'repeat(5, 40px)'; // 5 boxes in a row, each 40px wide
+    colorBoxesContainer.style.gridAutoRows = '40px'; // Each row is 40px high
+    colorBoxesContainer.style.gap = '0px'; // No gap between boxes
+    colorBoxesContainer.style.display = 'none'; 
     container.appendChild(colorBoxesContainer);
 
     // Append main container to the body
@@ -313,10 +318,11 @@ function activateEyedropperForImage() {
             colorBox.style.width = '40px';
             colorBox.style.height = '40px';
             colorBox.style.backgroundColor = rgb;
-            colorBox.style.border = '1px solid white'; // White border for the box
+            // colorBox.style.border = '1px solid white'; // White border for the box
 
             // Append the color box to the container
             colorBoxesContainer.appendChild(colorBox);
+            colorBoxesContainer.style.display = 'grid';
 
             console.log(rgb);
         }
