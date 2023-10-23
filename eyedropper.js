@@ -100,7 +100,7 @@ function initializeEyedropper() {
     imageContainer.id = 'imageContainer';
     imageContainer.style.marginTop = '10px';
     imageContainer.style.backgroundColor = 'transparent';
-    imageContainer.style.paddingBottom= '10px';
+    imageContainer.style.paddingBottom = '10px';
     imageInputContainer.appendChild(imageContainer);
 
     // Prevent mousedown event from propagating from the image to the container
@@ -131,7 +131,7 @@ function initializeEyedropper() {
     analyzeButtonEyedropper.innerText = 'Analyze Image';
     analyzeButtonEyedropper.onclick = function () {
         analyzeImage(imageUrlInputEyedropper.value);
-        colorBoxesContainer.style.visibility = 'visible'; 
+        colorBoxesContainer.style.visibility = 'visible';
     };
     inputContainer.appendChild(analyzeButtonEyedropper);
 
@@ -145,7 +145,11 @@ function initializeEyedropper() {
     colorBoxesContainer.style.gridTemplateColumns = 'repeat(5, 40px)'; // 5 boxes in a row, each 40px wide
     colorBoxesContainer.style.gridAutoRows = '40px'; // Each row is 40px high
     colorBoxesContainer.style.gap = '0px'; // No gap between boxes
-    colorBoxesContainer.style.display = 'none'; 
+    colorBoxesContainer.style.display = 'none';
+    colorBoxesContainer.style.border = '2px solid #8f9aa6';
+    colorBoxesContainer.style.borderRadius = '6px'
+    colorBoxesContainer.style.padding = '20px';
+    colorBoxesContainer.style.overflowY = 'auto'; // Enable vertical scrolling
     container.appendChild(colorBoxesContainer);
 
     // Append main container to the body
