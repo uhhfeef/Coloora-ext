@@ -300,6 +300,8 @@ function activateEyedropperForImage() {
     const imageContainer = document.getElementById('imageContainer');
 
     imageContainer.addEventListener('click', function (event) {
+        sendInitialEvent('created_color_box', 'eyedropperContainer');
+
         const img = event.target;
 
         // Ensure the clicked element is an image
@@ -327,6 +329,8 @@ function activateEyedropperForImage() {
             colorBox.addEventListener('contextmenu', function (e) {
                 e.preventDefault(); // Prevent the default context menu from appearing
                 colorBoxesContainer.removeChild(colorBox); // Remove the color box
+                sendInitialEvent('removed_color_box', 'eyedropperContainer');
+
             });
 
             // Append the color box to the container
