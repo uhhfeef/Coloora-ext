@@ -64,7 +64,7 @@ function initializeUIWheel() {
     container.style.left = '50%';
     container.style.transform = 'translateX(-50%)';
     container.style.zIndex = '99999';
-    container.style.backgroundColor = '#FFF';
+    container.style.backgroundColor = '#2a2a2a';
     container.style.border = '1px solid #000';
     container.style.padding = '10px';
     container.style.borderRadius = '8px';

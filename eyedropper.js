@@ -322,7 +322,12 @@ function activateEyedropperForImage() {
             colorBox.style.width = '40px';
             colorBox.style.height = '40px';
             colorBox.style.backgroundColor = rgb;
-            // colorBox.style.border = '1px solid white'; // White border for the box
+
+            // Add right-click event to delete the color box
+            colorBox.addEventListener('contextmenu', function(e) {
+                e.preventDefault(); // Prevent the default context menu from appearing
+                colorBoxesContainer.removeChild(colorBox); // Remove the color box
+            });
 
             // Append the color box to the container
             colorBoxesContainer.appendChild(colorBox);

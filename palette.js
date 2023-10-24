@@ -58,7 +58,7 @@ function initializeUIPalette() {
     container.style.left = '50%';
     container.style.transform = 'translateX(-50%)';
     container.style.zIndex = '99999';
-    container.style.backgroundColor = '#FFF';
+    container.style.backgroundColor = '#2a2a2a';
     container.style.border = '1px solid #000';
     container.style.padding = '20px 30px 10px 30px';
     container.style.paddingRight = '30px';  // Set paddingRight after the general padding
