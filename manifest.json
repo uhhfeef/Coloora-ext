@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Coloora",
-    "version": "0.1.2",
+    "version": "0.2.1",
     "description": "Analyse colors",
     "icons": {
         "16": "images/coloora-16.png",
