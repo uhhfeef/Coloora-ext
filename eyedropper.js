@@ -1,4 +1,4 @@
-// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -41,7 +41,7 @@ async function sendInitialEvent(eventName, elementId) {
     }
 }
 
-// sendInitialEvent('custom_palette_loaded', 'eyedropperContainer');
+sendInitialEvent('custom_palette_loaded', 'eyedropperContainer');
 
 // Initialization: Setting up the UI
 console.log("eyedropper base  loaded!");
@@ -223,7 +223,7 @@ function analyzeImage(imageUrl) {
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
             .then(directImageUrl => {
-                // sendInitialEvent("palette_generated", "analyzeButtonEyedropper"); // Calling the async function immediately
+                sendInitialEvent('loaded_image_eyedropper', 'eyedropperContainer');
                 sendImageForAnalysisEyedropper(directImageUrl);
             })
             .catch(error => {
@@ -231,7 +231,7 @@ function analyzeImage(imageUrl) {
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
-        // sendInitialEvent("palette_generated", "analyzeButtonEyedropper"); // Calling the async function immediately
+        sendInitialEvent('loaded_image_eyedropper', 'eyedropperContainer');
         sendImageForAnalysisEyedropper(imageUrl);
     }
 }
@@ -300,6 +300,8 @@ function activateEyedropperForImage() {
     const imageContainer = document.getElementById('imageContainer');
 
     imageContainer.addEventListener('click', function (event) {
+        sendInitialEvent('created_color_box', 'eyedropperContainer');
+
         const img = event.target;
 
         // Ensure the clicked element is an image
@@ -324,9 +326,11 @@ function activateEyedropperForImage() {
             colorBox.style.backgroundColor = rgb;
 
             // Add right-click event to delete the color box
-            colorBox.addEventListener('contextmenu', function(e) {
+            colorBox.addEventListener('contextmenu', function (e) {
                 e.preventDefault(); // Prevent the default context menu from appearing
                 colorBoxesContainer.removeChild(colorBox); // Remove the color box
+                sendInitialEvent('removed_color_box', 'eyedropperContainer');
+
             });
 
             // Append the color box to the container
