@@ -5,8 +5,83 @@ canvas.id = "colorWheel";
 let ctx;
 let center;
 let radius;
-let imageUrlInputWheel = document.getElementById('imageUrl');
 let analyzeButtonWheel = document.getElementById('analyzeButtonWheel');
+// Debounce function to batch process mutations
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+// Debounce function to batch process mutations
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+console.log('testcs loaded');
+
+let isUIInitialized = false; // Declare the flag outside the function
+
+function handleImages() {
+    console.log('content loaded');
+    // Get all image elements on the page
+    const images = document.querySelectorAll('img');
+
+    // Iterate over each image
+    images.forEach(img => {
+        // Create a button for each image
+        const btn = document.createElement('button');
+        btn.innerText = "Color Wheel";
+        btn.style.position = 'absolute';
+        btn.style.background = 'blue';
+        btn.style.color = 'white';
+        btn.style.border = 'none';
+        btn.style.borderRadius = '5px';
+        btn.style.cursor = 'pointer';
+        btn.style.zIndex = '1000'; // Ensure it's above other elements
+
+        // Position the button relative to the image
+        const rect = img.getBoundingClientRect();
+        btn.style.top = `${rect.top + window.scrollY}px`;
+        btn.style.left = `${rect.left + window.scrollX}px`;
+
+        // Add click event to the button
+        btn.addEventListener('click', function() {
+            const imageUrl = img.src;
+            const existingContainer = document.getElementById('colorWheelContainer');
+            if (existingContainer) {
+                // If the container already exists, simply display it
+                existingContainer.style.display = 'block';
+            } else {
+                // If the container doesn't exist, initialize the UI
+                if (!isUIInitialized) {
+                    initializeUIWheel();
+                    isUIInitialized = true;
+                }
+            }
+            analyzeImageWheel(imageUrl);
+        });
+        
+
+        // Append the button to the body
+        document.body.appendChild(btn);
+    });
+}
+
+
+// Check if the document is already loaded
+if (document.readyState === "loading") {
+    // If not, wait for the DOMContentLoaded event
+    document.addEventListener("DOMContentLoaded", handleImages);
+} else {
+    // If it's already loaded, run the function immediately
+    handleImages();
+}
 
 // Initialization: Setting up the UI
 function initializeUIWheel() {
@@ -39,8 +114,8 @@ function initializeUIWheel() {
     closeButton.style.height = '20px';
     closeButton.style.cursor = 'pointer';
     closeButton.onclick = () => {
-        document.body.removeChild(container);
-    };
+        container.style.display = 'none'; // Hide the container instead of removing it
+    };    
     container.appendChild(closeButton);
 
     // Drag and drop
@@ -92,9 +167,6 @@ function initializeUIWheel() {
     container.appendChild(canvas);
     document.body.appendChild(container);
     drawColorWheel();
-
-    // Append inputContainer to main container
-    container.appendChild(inputContainer);
 }
 
 function extractImageFromPage(url) {
@@ -117,12 +189,11 @@ function analyzeImageWheel(imageUrl) {
         shakeElement(imageUrlInputWheel);
         return; // Terminate the function
     }
-    imageUrlInputWheel.value = '';
 
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
             .then(directImageUrl => {
-                sendInitialEvent("color_wheel_analysis", "analyzeButtonWheel"); // Calling the async function immediately
+                // sendInitialEvent("color_wheel_analysis", "analyzeButtonWheel"); // Calling the async function immediately
                 sendImageForAnalysisWheel(directImageUrl);
             })
             .catch(error => {
@@ -130,7 +201,7 @@ function analyzeImageWheel(imageUrl) {
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
-        sendInitialEvent("color_wheel_analysis", "analyzeButtonWheel"); // Calling the async function immediately
+        // sendInitialEvent("color_wheel_analysis", "analyzeButtonWheel"); // Calling the async function immediately
         sendImageForAnalysisWheel(imageUrl);
     }
 }
@@ -354,3 +425,33 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
+
+// Initialize the MutationObserver
+const observer = new MutationObserver((mutationsList) => {
+    for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+            for (let addedNode of mutation.addedNodes) {
+                if (addedNode.nodeType === Node.ELEMENT_NODE) {
+                    // If an IMG element is added, handle it
+                    if (addedNode.tagName === 'IMG') {
+                        handleImages();
+                    }
+                    // Also handle images that are descendants of the added node
+                    const newImages = addedNode.querySelectorAll('img');
+                    if (newImages.length > 0) {
+                        handleImages();
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Configuration for the observer
+const config = {
+    childList: true,  // Observe direct children
+    subtree: true     // Also observe all descendants
+};
+
+// Start observing the document
+observer.observe(document.body, config);

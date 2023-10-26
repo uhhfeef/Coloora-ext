@@ -43,5 +43,11 @@
                 "loading-bar.gif"
             ]
         }
-    ]
+    ],
+    "content_scripts": [
+        {
+          "matches": ["https://www.pinterest.com/*"],
+          "js": ["CS-color-wheel.js"]
+        }
+      ]
 }
