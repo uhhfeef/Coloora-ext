@@ -6,18 +6,12 @@ let ctx;
 let center;
 let radius;
 let analyzeButtonWheel = document.getElementById('analyzeButtonWheel');
+let initialURL = window.location.href;
+
 // Debounce function to batch process mutations
 function debounce(func, wait) {
     let timeout;
-    return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-}
-// Debounce function to batch process mutations
-function debounce(func, wait) {
-    let timeout;
-    return function(...args) {
+    return function (...args) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
@@ -34,45 +28,69 @@ function handleImages() {
 
     // Iterate over each image
     images.forEach(img => {
-        // Create a button for each image
-        const btn = document.createElement('button');
-        btn.innerText = "Color Wheel";
-        btn.style.position = 'absolute';
-        btn.style.background = 'blue';
-        btn.style.color = 'white';
-        btn.style.border = 'none';
-        btn.style.borderRadius = '5px';
-        btn.style.cursor = 'pointer';
-        btn.style.zIndex = '1000'; // Ensure it's above other elements
+        if (!img.closest('#colorWheelContainer')) {
+            // Check if the image dimensions are above 50x50
+            if (img.naturalWidth > 50 && img.naturalHeight > 50) {
+                // Create a button for each qualifying image
+                const btn = document.createElement('button');
+                btn.innerText = "🎨";
+                btn.style.position = 'absolute';
+                btn.style.background = 'white';
+                btn.style.color = 'white';
+                btn.style.opacity = '20%';
+                btn.style.border = 'none';
+                btn.style.width = '48px';
+                btn.style.height = '48px';
+                btn.style.borderRadius = '50%';
+                btn.style.cursor = 'pointer';
+                btn.style.zIndex = '9999'; // Ensure it's above other elements
+                btn.style.opacity = '0'; // Initially transparent
+                btn.style.fontSize = '16px';
 
-        // Position the button relative to the image
-        const rect = img.getBoundingClientRect();
-        btn.style.top = `${rect.top + window.scrollY}px`;
-        btn.style.left = `${rect.left + window.scrollX}px`;
+                // Position the button inside the image, near the top right corner
+                btn.style.top = '70px'; // 100 pixels from the top edge of the image
+                btn.style.right = '12px'; // 100 pixels from the right edge of the image
 
-        // Add click event to the button
-        btn.addEventListener('click', function() {
-            const imageUrl = img.src;
-            const existingContainer = document.getElementById('colorWheelContainer');
-            if (existingContainer) {
-                // If the container already exists, simply display it
-                existingContainer.style.display = 'block';
-            } else {
-                // If the container doesn't exist, initialize the UI
-                if (!isUIInitialized) {
-                    initializeUIWheel();
-                    isUIInitialized = true;
-                }
+                // Get the parent container of the image
+                const parentContainer = img.parentNode;
+
+                // Show the button when the parent container is hovered over
+                parentContainer.addEventListener('mouseover', function () {
+                    btn.style.opacity = '1';
+                });
+
+                // Hide the button when the mouse is no longer hovering over the parent container
+                parentContainer.addEventListener('mouseout', function () {
+                    btn.style.opacity = '0';
+                });
+
+                // Add click event to the button
+                // Add click event to the button
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Stop the event from propagating to parent elements
+                    e.preventDefault();  // Prevent the default behavior of the event
+
+                    const imageUrl = img.src;
+                    const existingContainer = document.getElementById('colorWheelContainer');
+                    if (existingContainer) {
+                        // If the container already exists, simply display it
+                        existingContainer.style.display = 'block';
+                    } else {
+                        // If the container doesn't exist, initialize the UI
+                        if (!isUIInitialized) {
+                            initializeUIWheel();
+                            isUIInitialized = true;
+                        }
+                    }
+                    analyzeImageWheel(imageUrl);
+                });
+
+                // Append the button to the image's parent (so they're in the same container)
+                parentContainer.appendChild(btn);
             }
-            analyzeImageWheel(imageUrl);
-        });
-        
-
-        // Append the button to the body
-        document.body.appendChild(btn);
+        }
     });
 }
-
 
 // Check if the document is already loaded
 if (document.readyState === "loading") {
@@ -115,7 +133,7 @@ function initializeUIWheel() {
     closeButton.style.cursor = 'pointer';
     closeButton.onclick = () => {
         container.style.display = 'none'; // Hide the container instead of removing it
-    };    
+    };
     container.appendChild(closeButton);
 
     // Drag and drop
@@ -341,7 +359,7 @@ function updateColorWheel(colorData) {
                 const avgBrightness = hueData[saturationValue].totalBrightness / hueData[saturationValue].count;
                 ctx.strokeStyle = getColorByAngleAndRadius(angle, saturationValue, avgBrightness);
             } else {
-                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 10); // Reduced brightness to 10% for unmatched hues/saturations
+                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 5); // Reduced brightness to 10% for unmatched hues/saturations
             }
 
             ctx.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
@@ -455,3 +473,23 @@ const config = {
 
 // Start observing the document
 observer.observe(document.body, config);
+// Function to restart your content script
+function restartContentScript() {
+    console.log("Restarting content script due to URL change...");
+
+    // Clear any existing data or listeners related to your content script
+    // For example, you might want to remove any buttons you've added to the page
+    const existingButtons = document.querySelectorAll('#injectColorWheel');
+    existingButtons.forEach(btn => btn.remove());
+
+    // Re-run your content script initialization code
+    handleImages();
+}
+
+// Periodically check for URL changes
+setInterval(function () {
+    if (window.location.href !== initialURL) {
+        initialURL = window.location.href; // Update the stored URL
+        restartContentScript();
+    }
+}, 1000); // Check every second

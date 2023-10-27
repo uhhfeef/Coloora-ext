@@ -40,14 +40,19 @@
                 "<all_urls>"
             ],
             "resources": [
-                "loading-bar.gif"
+                "loading-bar.gif",
+                "images/coloora-48.png"
             ]
         }
     ],
     "content_scripts": [
         {
-          "matches": ["https://www.pinterest.com/*"],
-          "js": ["CS-color-wheel.js"]
+            "matches": [
+                "https://www.pinterest.com/*"
+            ],
+            "js": [
+                "CS-color-wheel.js"
+            ]
         }
-      ]
+    ]
 }
