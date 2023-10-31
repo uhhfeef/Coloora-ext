@@ -1,3 +1,46 @@
+var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+
+// Works here
+async function getOrCreateClientId() {
+    const result = await chrome.storage.local.get('clientId');
+    console.log('inside getor create')
+
+    let clientId = result.clientId;
+    if (!clientId) {
+        // Generate a unique client ID, the actual value is not relevant
+        clientId = self.crypto.randomUUID();
+        console.log('generated clientid')
+        await chrome.storage.local.set({ clientId });
+    }
+    console.log(clientId)
+    return clientId;
+}
+
+async function sendInitialEvent(eventName, elementId) {
+    try {
+        fetch(
+            FLASK_ENDPOINT,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    client_id: await getOrCreateClientId(),
+                    event_name: eventName,
+                    event_params: {
+                        id: elementId,
+                    },
+                }),
+            }
+        );
+        console.log("event sent");
+    }
+    catch (error) {
+        console.error("Error sending data to Flask server:", error);
+    }
+}
+
 console.log("Content script loaded!");
 // Constants and DOM elements
 const canvas = document.createElement("canvas");
@@ -33,6 +76,7 @@ function handleImages() {
             if (img.naturalWidth > 50 && img.naturalHeight > 50) {
                 // Create a button for each qualifying image
                 const btn = document.createElement('button');
+                btn.id = 'CSColorWheel'
                 btn.innerText = "🎨";
                 btn.style.position = 'absolute';
                 btn.style.background = 'white';
@@ -67,6 +111,8 @@ function handleImages() {
                 // Add click event to the button
                 // Add click event to the button
                 btn.addEventListener('click', function (e) {
+                    sendInitialEvent('color_wheel_option_clicked', 'CSColorWheel');
+
                     e.stopPropagation(); // Stop the event from propagating to parent elements
                     e.preventDefault();  // Prevent the default behavior of the event
 
