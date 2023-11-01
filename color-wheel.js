@@ -45,7 +45,7 @@ sendInitialEvent('color_wheel_loaded', 'colorWheelContainer');
 
 console.log("Content script loaded!");
 // Constants and DOM elements
-const canvas = document.createElement("canvas");
+var canvas = document.createElement("canvas");
 canvas.id = "colorWheel";
 let ctx;
 let center;

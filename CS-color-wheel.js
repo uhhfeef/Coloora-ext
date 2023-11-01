@@ -436,13 +436,6 @@ function shakeElement(element) {
     animateShake();
 }
 
-// Adopt Content Script Behavior
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    if (request.action === "showColorWheel") {
-        initializeUIWheel();
-    }
-});
-
 
 // Initialize the MutationObserver
 const observer = new MutationObserver((mutationsList) => {
