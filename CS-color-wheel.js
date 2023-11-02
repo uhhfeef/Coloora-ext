@@ -111,7 +111,7 @@ function handleImages() {
                 // Add click event to the button
                 // Add click event to the button
                 btn.addEventListener('click', function (e) {
-                    sendInitialEvent('color_wheel_option_clicked', 'CSColorWheel');
+                    sendInitialEvent('color_wheel_cs_clicked', 'CSColorWheel');
 
                     e.stopPropagation(); // Stop the event from propagating to parent elements
                     e.preventDefault();  // Prevent the default behavior of the event
