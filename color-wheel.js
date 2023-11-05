@@ -47,7 +47,7 @@ console.log("Content script loaded!");
 // Constants and DOM elements
 var canvas = document.createElement("canvas");
 canvas.id = "colorWheel";
-let ctx;
+let ctx_colorwheel;
 let center;
 let radius;
 let imageUrlInputWheel = document.getElementById('imageUrl');
@@ -130,7 +130,7 @@ function initializeUIWheel() {
     // Set up the canvas
     canvas.width = 250;   // Set canvas size
     canvas.height = 250;
-    ctx = canvas.getContext("2d");
+    ctx_colorwheel = canvas.getContext("2d");
     center = { x: canvas.width / 2, y: canvas.height / 2 };
     radius = canvas.width / 2;
 
@@ -267,14 +267,14 @@ function getColorByAngleAndRadius(angle, r, l) {
 
 function drawColorWheel() {
     // Clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx_colorwheel.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let angle = 0; angle < 360; angle++) {
         for (let r = 0; r < radius; r++) {
-            ctx.beginPath();
-            ctx.strokeStyle = getColorByAngleAndRadius(angle, r);
-            ctx.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
-            ctx.stroke();
+            ctx_colorwheel.beginPath();
+            ctx_colorwheel.strokeStyle = getColorByAngleAndRadius(angle, r);
+            ctx_colorwheel.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
+            ctx_colorwheel.stroke();
         }
     }
 }
@@ -301,8 +301,8 @@ function rgbToHsl(r, g, b) {
     return [h * 360, s * 100, l * 100];
 }
 
-function analyzeColors(ctx, width, height) {
-    const imageData = ctx.getImageData(0, 0, width, height).data;
+function analyzeColors(ctx_colorwheel, width, height) {
+    const imageData = ctx_colorwheel.getImageData(0, 0, width, height).data;
     const colorData = {};
 
     for (let i = 0; i < imageData.length; i += 4) {
@@ -330,20 +330,20 @@ function analyzeColors(ctx, width, height) {
 function updateColorWheel(colorData) {
     for (let angle = 0; angle < 360; angle++) {
         for (let r = 0; r < radius; r++) {
-            ctx.beginPath();
+            ctx_colorwheel.beginPath();
 
             const hueData = colorData[angle];
             const saturationValue = Math.round((r / radius) * 100);
 
             if (hueData && hueData[saturationValue]) {
                 const avgBrightness = hueData[saturationValue].totalBrightness / hueData[saturationValue].count;
-                ctx.strokeStyle = getColorByAngleAndRadius(angle, saturationValue, avgBrightness);
+                ctx_colorwheel.strokeStyle = getColorByAngleAndRadius(angle, saturationValue, avgBrightness);
             } else {
-                ctx.strokeStyle = getColorByAngleAndRadius(angle, r, 10); // Reduced brightness to 10% for unmatched hues/saturations
+                ctx_colorwheel.strokeStyle = getColorByAngleAndRadius(angle, r, 10); // Reduced brightness to 10% for unmatched hues/saturations
             }
 
-            ctx.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
-            ctx.stroke();
+            ctx_colorwheel.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
+            ctx_colorwheel.stroke();
         }
     }
     hideLoadingGif();
