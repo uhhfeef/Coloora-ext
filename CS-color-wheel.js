@@ -42,6 +42,8 @@ async function sendInitialEvent(eventName, elementId) {
 }
 
 console.log("Content script loaded!");
+sendInitialEvent("pinterest_loaded", "CSColorWheel")
+
 // Constants and DOM elements
 const canvas = document.createElement("canvas");
 canvas.id = "colorWheel";
