@@ -139,6 +139,13 @@ function initializeEyedropper() {
     imageInputContainer.appendChild(inputContainer);
     container.appendChild(imageInputContainer);
 
+    // Create a container for color boxes and label
+    const colorContainer = document.createElement('div');
+    colorContainer.style.display = 'flex';
+    colorContainer.style.flexDirection = 'column';
+    colorContainer.style.marginTop = '10px';
+    container.appendChild(colorContainer);
+
     // Create a container for color boxes
     const colorBoxesContainer = document.createElement('div');
     colorBoxesContainer.id = 'colorBoxesContainer';
@@ -150,7 +157,15 @@ function initializeEyedropper() {
     colorBoxesContainer.style.borderRadius = '6px'
     colorBoxesContainer.style.padding = '20px';
     colorBoxesContainer.style.overflowY = 'auto'; // Enable vertical scrolling
-    container.appendChild(colorBoxesContainer);
+    colorContainer.appendChild(colorBoxesContainer);
+
+    // Create label for color boxes
+    const label = document.createElement('label');
+    label.innerText = 'Click to pick, right click to delete';
+    label.style.color = '#fff';
+    label.style.fontSize = '14px';
+    label.style.marginTop = '10px';
+    colorContainer.appendChild(label);
 
     // Append main container to the body
     document.body.appendChild(container);
