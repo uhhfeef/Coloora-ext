@@ -352,6 +352,16 @@ function activateEyedropperForImage() {
             colorBoxesContainer.appendChild(colorBox);
             colorBoxesContainer.style.display = 'grid';
 
+            // Add subtle pop animation
+            colorBox.animate([
+                { transform: 'scale(0.8)', opacity: 0 },
+                { transform: 'scale(1.1)', opacity: 1 },
+                { transform: 'scale(1)', opacity: 1 }
+            ], {
+                duration: 300,
+                easing: 'ease-out'
+            });
+
             console.log(rgb);
         }
     });
