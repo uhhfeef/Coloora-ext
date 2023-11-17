@@ -43,6 +43,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
+const extpay = ExtPay('phdgnljpgjngdcmkfoakcechbmikjmok')
+extpay.startBackground(); 
+
 // chrome.action.onClicked.addListener(function (tab) {
 //     chrome.scripting.executeScript({
 //         target: { tabId: tab.id },
