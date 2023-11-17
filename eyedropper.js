@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -114,7 +114,6 @@ function initializeEyedropper() {
     const inputContainer = document.createElement('div');
     inputContainer.style.display = 'flex';
     inputContainer.style.justifyContent = 'center';
-    inputContainer.style.marginTop = 'auto';
 
     // Create input for image URL
     imageUrlInputEyedropper = document.createElement('input');
@@ -157,7 +156,9 @@ function initializeEyedropper() {
     colorBoxesContainer.style.borderRadius = '6px'
     colorBoxesContainer.style.padding = '20px';
     colorBoxesContainer.style.overflowY = 'auto'; // Enable vertical scrolling
+    colorBoxesContainer.style.overflowY = 'scroll';
     colorContainer.appendChild(colorBoxesContainer);
+    // colorBoxesContainer.style.height = '200px';
 
     // Create label for color boxes
     const label = document.createElement('label');
@@ -279,6 +280,8 @@ function sendImageForAnalysisEyedropper(imageUrl) {
                     // Get half the viewport height
                     const halfViewportHeight = window.innerHeight / 2;
 
+                    const colorBoxContainer = document.getElementById('colorBoxesContainer');
+
                     // Get the image container
                     const imageContainer = document.getElementById('imageContainer');
 
@@ -290,7 +293,7 @@ function sendImageForAnalysisEyedropper(imageUrl) {
                         img.width = img.naturalWidth;
                         img.height = img.naturalHeight;
                     }
-
+                        
                     // Set the image container dimensions
                     imageContainer.style.width = `${img.width}px`;
                     imageContainer.style.height = `${img.height}px`;
@@ -300,6 +303,9 @@ function sendImageForAnalysisEyedropper(imageUrl) {
 
                     // Append the new image
                     imageContainer.appendChild(img);
+
+                    // Set the color box container height to the image height
+                    colorBoxContainer.style.height = `${img.height}px`;
                 }
             }
             else {
