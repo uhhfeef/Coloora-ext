@@ -1,3 +1,5 @@
+importScripts('ExtPay.js')
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === "executeColorWheelScript") {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -43,7 +45,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
-const extpay = ExtPay('phdgnljpgjngdcmkfoakcechbmikjmok')
+var extpay = ExtPay('phdgnljpgjngdcmkfoakcechbmikjmok'); 
 extpay.startBackground(); 
 
 // chrome.action.onClicked.addListener(function (tab) {
