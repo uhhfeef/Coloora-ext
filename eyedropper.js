@@ -93,15 +93,58 @@ function initializeEyedropper() {
     imageInputContainer.style.display = 'flex'; // Added for centering
     imageInputContainer.style.justifyContent = 'center'; // Center horizontally
     imageInputContainer.style.alignItems = 'center'; // Center vertically
-    imageInputContainer.style.marginRight = '20px'; // Space between the two child containers
+    // imageInputContainer.style.marginRight = '20px'; // Space between the two child containers
 
     // Create an image container
     const imageContainer = document.createElement('div');
     imageContainer.id = 'imageContainer';
-    imageContainer.style.marginTop = '10px';
+    imageContainer.style.margin = '10px 0 10px 0';
     imageContainer.style.backgroundColor = 'transparent';
-    imageContainer.style.paddingBottom = '10px';
     imageInputContainer.appendChild(imageContainer);
+
+    // Set up the image container as a drop zone
+    imageContainer.textContent = 'Drag and drop image URL here';
+    imageContainer.style.fontSize = '14px';
+    imageContainer.style.color = '#fff';   
+    imageContainer.style.padding = '20px';
+    imageContainer.style.border = '2px dashed #ccc';
+    imageContainer.style.transition = 'background-color 0.3s'; // Add transition for smooth animation
+    imageContainer.style.display = 'flex'; // Add flex display
+    imageContainer.style.justifyContent = 'center'; // Center horizontally
+    imageContainer.style.alignItems = 'center'; // Center vertically
+
+    // Handle drag over event
+    imageContainer.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        imageContainer.style.backgroundColor = 'rgba(128, 128, 128, 0.5)'; // Semi-transparent grey overlay
+        imageContainer.style.border = '2px dashed #ccc';
+    });
+
+    // Handle drag leave event
+    imageContainer.addEventListener('dragleave', function(e) {
+        imageContainer.style.backgroundColor = 'transparent'; // Remove overlay
+        imageContainer.style.borderColor = '#ccc';
+        imageContainer.style.border = 'none';
+    });
+
+    // Handle drop event
+    imageContainer.addEventListener('drop', function(e) {
+        e.preventDefault();
+        imageContainer.style.backgroundColor = 'transparent'; // Remove overlay
+
+        // Get the URL from the dropped item
+        const url = e.dataTransfer.getData('text');
+        
+        // Display the image in the container
+        imageContainer.innerHTML = `<img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">`;
+
+        // Analyze the image
+        analyzeImage(url);
+        // Animate the visibility of colorBoxesContainer
+        colorBoxesContainer.style.opacity = '1'; // Trigger the fade-in animation
+        colorBoxesContainer.style.visibility = 'visible';
+        imageContainer.style.border = 'none';
+    });
 
     // Prevent mousedown event from propagating from the image to the container
     imageContainer.addEventListener('mousedown', function (e) {
@@ -114,34 +157,12 @@ function initializeEyedropper() {
     const inputContainer = document.createElement('div');
     inputContainer.style.display = 'flex';
     inputContainer.style.justifyContent = 'center';
-
-    // Create input for image URL
-    imageUrlInputEyedropper = document.createElement('input');
-    imageUrlInputEyedropper.id = 'imageUrl';
-    imageUrlInputEyedropper.type = 'text';
-    imageUrlInputEyedropper.placeholder = 'Enter image URL';
-    imageUrlInputEyedropper.style.flex = '1';
-    imageUrlInputEyedropper.style.marginRight = '10px';
-    inputContainer.appendChild(imageUrlInputEyedropper);
-
-    // Create analyze button
-    const analyzeButtonEyedropper = document.createElement('button');
-    analyzeButtonEyedropper.id = 'analyzeButtonEyedropper';
-    analyzeButtonEyedropper.innerText = 'Analyze Image';
-    analyzeButtonEyedropper.onclick = function () {
-        analyzeImage(imageUrlInputEyedropper.value);
-        colorBoxesContainer.style.visibility = 'visible';
-    };
-    inputContainer.appendChild(analyzeButtonEyedropper);
-
-    // Append inputContainer to imageInputContainer
-    imageInputContainer.appendChild(inputContainer);
-
+    
     // Create label for color boxes
+
     const label = document.createElement('label');
     label.innerText = 'Click to pick, right click to delete';
-    label.style.color = '#fff';
-    label.style.fontSize = '14px';
+    label.style.color = '#b0b0b0';
     label.style.marginTop = '10px';
     imageInputContainer.appendChild(label);
 
@@ -166,7 +187,10 @@ function initializeEyedropper() {
     colorBoxesContainer.style.padding = '20px';
     colorBoxesContainer.style.overflowY = 'auto'; // Enable vertical scrolling
     colorBoxesContainer.style.overflowY = 'scroll';
+    colorBoxesContainer.style.opacity = '0';
+    colorBoxesContainer.style.transition = 'opacity 0.5s ease-in-out';
     colorContainer.appendChild(colorBoxesContainer);
+    
     // colorBoxesContainer.style.height = '200px';
 
     // Append main container to the body
@@ -175,6 +199,7 @@ function initializeEyedropper() {
     initializeDragAndDrop(container);
     activateEyedropperForImage();
 }
+
 
 function initializeDragAndDrop(container) {
     let isDragging = false;
@@ -235,7 +260,7 @@ function analyzeImage(imageUrl) {
         shakeElement(imageUrlInputEyedropper);
         return; // Terminate the function
     }
-    imageUrlInputEyedropper.value = '';
+    // imageUrlInputEyedropper.value = '';
 
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
@@ -389,20 +414,23 @@ function shakeElement(element) {
     let shakes = 5;
     let distance = 2; // in pixels
 
-    const originalMarginLeft = parseInt(window.getComputedStyle(element).marginLeft, 10) || 0;
-    const originalMarginRight = parseInt(window.getComputedStyle(element).marginRight, 10) || 0;
+    const originalStyle = {
+        marginLeft: element.style.marginLeft,
+        marginRight: element.style.marginRight
+    };
 
     function animateShake() {
         if (shakes === 0) {
-            element.style.marginLeft = `${originalMarginLeft}px`; // Reset to original margins
-            element.style.marginRight = `${originalMarginRight}px`;
+            // Reset to original styles
+            element.style.marginLeft = originalStyle.marginLeft;
+            element.style.marginRight = originalStyle.marginRight;
             return;
         }
 
         // Alternate direction for shaking effect
         const offset = (shakes % 2 === 0) ? distance : -distance;
-        element.style.marginLeft = `${originalMarginLeft + offset}px`;
-        element.style.marginRight = `${originalMarginRight - offset}px`;
+        element.style.marginLeft = `${parseInt(element.style.marginLeft || 0, 10) + offset}px`;
+        element.style.marginRight = `${parseInt(element.style.marginRight || 0, 10) - offset}px`;
 
         shakes -= 1;
         setTimeout(animateShake, 50);
@@ -410,6 +438,8 @@ function shakeElement(element) {
 
     animateShake();
 }
+
+
 
 // Adopt Content Script Behavior
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
