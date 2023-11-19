@@ -9,6 +9,8 @@ body {
     border: 3px solid #2a2a2a;
     box-sizing: border-box;
     overflow: hidden;
+    color: #ddd;
+    font-weight: 500;
 }
 
 .dark-mode {
@@ -77,6 +79,13 @@ textarea {
     /* Smaller shadow when pressed */
 }
 
+#trialMessage {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .footer {
     font-size: 10px;
     color: rgba(255, 255, 255, 0.6);
@@ -88,14 +97,14 @@ textarea {
     padding: 5px 0 5px 0;
 }
 
-.label-text {
-    color: #ddd;
-    font-weight: bold;
-    font-size: 18px;
+.text {
+    color: #4545ff;
     /* Adjust size as needed */
-    text-align: left;
-    margin: 10px;
-    /* Gap below the text */
-    width: 100%;
-    display: block;
+}
+
+.highlighted-link {
+    background-color: #004191; /* Light blue background */
+    color: white; /* White text */
+    padding: 2px 5px; /* Some padding for better appearance */
+    border-radius: 2px; /* Optional: rounded corners */
 }
