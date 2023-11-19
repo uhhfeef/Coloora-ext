@@ -1,5 +1,5 @@
 const now = new Date();
-const sevenDays = 1000*60*60*24*15 // seven days in milliseconds
+const fifteenDays = 1000*60*60*24*1 // seven days in milliseconds
 const extpay = ExtPay('phdgnljpgjngdcmkfoakcechbmikjmok')   
 
 document.getElementById('colorWheelBtn').addEventListener('click', function () {
@@ -11,23 +11,25 @@ document.getElementById('generateColorPaletteBtn').addEventListener('click', fun
 });
 
 document.getElementById('eyedropperBtn').addEventListener('click', function () {
-    extpay.getUser().then(user => {
-        if (user.trialStartedAt && (now - user.trialStartedAt) < fifteenDays) {
-            // user has an active trial
-            chrome.runtime.sendMessage({ action: "executeEyedropper" });
-        } else if (!user.trialStartedAt) {
-            // user has not started a trial
-            extpay.openTrialPage()
-        } else if (user.trialStartedAt && (now - user.trialStartedAt) > fifteenDays) {
-            // user's trial has completed
-            extpay.openPaymentPage()
-        }
+    // extpay.getUser().then(user => {
+    //     if (user.trialStartedAt && (now - user.trialStartedAt) < fifteenDays) {
+    //         // user has an active trial
+    //         chrome.runtime.sendMessage({ action: "executeEyedropper" });
+    //     } else if (!user.trialStartedAt) {
+    //         // user has not started a trial
+    //         extpay.openTrialPage()
+    //     } else if (user.trialStartedAt && (now - user.trialStartedAt) > fifteenDays) {
+    //         // user's trial has completed
+    //         extpay.openPaymentPage()
+    //     }
 
-        if (user.paid) {
-            // user has paid
-            chrome.runtime.sendMessage({ action: "executeEyedropper" });
-        }
-    })
+    //     if (user.paid) {
+    //         // user has paid
+    //         chrome.runtime.sendMessage({ action: "executeEyedropper" });
+    //     }
+    // })
+
+    chrome.runtime.sendMessage({ action: "executeEyedropper" });
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -37,32 +39,32 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-    extpay.getUser().then(user => {
-        if (user.trialStartedAt && (now - user.trialStartedAt) < fifteenDays) {
-            // user has an active trial
-            paymentLink.textContent = 'Free trial activated';
-            document.getElementById('paymentLink').addEventListener('click', function () {
-                extpay.openPaymentPage();
-            });
-        } else if (!user.trialStartedAt) {
-            // user has not started a trial
-            paymentLink.textContent = 'Start free trial';
-            document.getElementById('paymentLink').addEventListener('click', function () {
-                extpay.openTrialPage();
-            });
-        } else if (user.trialStartedAt && (now - user.trialStartedAt) > fifteenDays) {
-            // user's trial has completed
-            paymentLink.textContent = 'Activate Coloora';
-            document.getElementById('paymentLink').addEventListener('click', function () {
-                extpay.openPaymentPage();
-            });
-        }
+    // extpay.getUser().then(user => {
+    //     if (user.trialStartedAt && (now - user.trialStartedAt) < fifteenDays) {
+    //         // user has an active trial
+    //         paymentLink.textContent = 'Free trial activated';
+    //         document.getElementById('paymentLink').addEventListener('click', function () {
+    //             extpay.openPaymentPage();
+    //         });
+    //     } else if (!user.trialStartedAt) {
+    //         // user has not started a trial
+    //         paymentLink.textContent = 'Start free trial';
+    //         document.getElementById('paymentLink').addEventListener('click', function () {
+    //             extpay.openTrialPage();
+    //         });
+    //     } else if (user.trialStartedAt && (now - user.trialStartedAt) > fifteenDays) {
+    //         // user's trial has completed
+    //         paymentLink.textContent = 'Activate Coloora';
+    //         document.getElementById('paymentLink').addEventListener('click', function () {
+    //             extpay.openPaymentPage();
+    //         });
+    //     }
 
-        if (user.paid) {
-            // user has paid
-            paymentLink.textContent = 'Thx for your support :)';
-        }
-    })
+    //     if (user.paid) {
+    //         // user has paid
+    //         paymentLink.textContent = 'Thx for your support :)';
+    //     }
+    // })
 });
 
 
