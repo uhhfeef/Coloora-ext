@@ -10,7 +10,14 @@
 
 <body class="dark-mode">
     <div class="main-container">
-        <div class="container">
+        <div class="container"  style="display: none;">
+            <h1>Coloora 🎨</h1>
+            <div id="trialMessage" >
+                <p>Your trial period has ended. change this</p>
+                <button  class="btn" id="payButton">Would you like to support me?</button>
+            </div>
+        </div>
+        <div class="container" style="display: block;">
             <h1>Coloora 🎨</h1>
             <button id="colorWheelBtn" class="btn">Color Wheel</button>
             <button id="generateColorPaletteBtn" class="btn">Generate Color Palette</button>
@@ -18,11 +25,13 @@
         </div>
         <div class="footer">
             Version: <span id="version"></span> |
-            <a href="#" id="featureRequestLink">Feature Request</a>
+            <a href="#" class="text" id="featureRequestLink">Feature Request</a> 
+            <!-- <a href="#" class="highlighted-link" id="paymentLink"></a>  -->
         </div>
     </div>
+    <script src="ExtPay.js"></script>
     <script src="popup.js"></script>
-    <script src="featureRequest.js"></script>
+    <script src="payment.js"></script>
 </body>
 
 </html>
