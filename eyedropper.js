@@ -136,6 +136,15 @@ function initializeEyedropper() {
 
     // Append inputContainer to imageInputContainer
     imageInputContainer.appendChild(inputContainer);
+
+    // Create label for color boxes
+    const label = document.createElement('label');
+    label.innerText = 'Click to pick, right click to delete';
+    label.style.color = '#fff';
+    label.style.fontSize = '14px';
+    label.style.marginTop = '10px';
+    imageInputContainer.appendChild(label);
+
     container.appendChild(imageInputContainer);
 
     // Create a container for color boxes and label
@@ -159,14 +168,6 @@ function initializeEyedropper() {
     colorBoxesContainer.style.overflowY = 'scroll';
     colorContainer.appendChild(colorBoxesContainer);
     // colorBoxesContainer.style.height = '200px';
-
-    // Create label for color boxes
-    const label = document.createElement('label');
-    label.innerText = 'Click to pick, right click to delete';
-    label.style.color = '#fff';
-    label.style.fontSize = '14px';
-    label.style.marginTop = '10px';
-    colorContainer.appendChild(label);
 
     // Append main container to the body
     document.body.appendChild(container);
@@ -349,9 +350,19 @@ function activateEyedropperForImage() {
             // Add right-click event to delete the color box
             colorBox.addEventListener('contextmenu', function (e) {
                 e.preventDefault(); // Prevent the default context menu from appearing
-                colorBoxesContainer.removeChild(colorBox); // Remove the color box
-                sendInitialEvent('removed_color_box', 'eyedropperContainer');
 
+                // Add reverse animation before removing the color box
+                colorBox.animate([
+                    { transform: 'scale(1)', opacity: 1 },
+                    { transform: 'scale(1.1)', opacity: 1 },
+                    { transform: 'scale(0.8)', opacity: 0 }
+                ], {
+                    duration: 150,
+                    easing: 'ease-out'
+                }).onfinish = function () {
+                    colorBoxesContainer.removeChild(colorBox); // Remove the color box
+                    sendInitialEvent('removed_color_box', 'eyedropperContainer');
+                };
             });
 
             // Append the color box to the container
