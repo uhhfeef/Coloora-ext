@@ -113,6 +113,11 @@ function initializeEyedropper() {
     imageContainer.style.justifyContent = 'center'; // Center horizontally
     imageContainer.style.alignItems = 'center'; // Center vertically
 
+    // Prevent dragging of the image container
+    imageContainer.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+    });
+
     // Handle drag over event
     imageContainer.addEventListener('dragover', function(e) {
         e.preventDefault();
@@ -144,12 +149,12 @@ function initializeEyedropper() {
         colorBoxesContainer.style.opacity = '1'; // Trigger the fade-in animation
         colorBoxesContainer.style.visibility = 'visible';
         imageContainer.style.border = 'none';
-    });
-
-    // Prevent mousedown event from propagating from the image to the container
-    imageContainer.addEventListener('mousedown', function (e) {
-        if (e.target.tagName === 'IMG') {
-            e.stopPropagation();
+        const img = imageContainer.querySelector('img');
+        if (img) {
+            // Prevent dragging of the image
+            img.addEventListener('mousedown', function(event) {
+                event.preventDefault();
+            });
         }
     });
 
@@ -207,6 +212,11 @@ function initializeDragAndDrop(container) {
     let initialContainerX, initialContainerY;
 
     container.addEventListener('mousedown', (e) => {
+        // Check if the target element is the image element
+        if (e.target.tagName.toLowerCase() === 'img') {
+            return;
+        }
+
         isDragging = true;
 
         // Record the initial mouse position
@@ -218,7 +228,7 @@ function initializeDragAndDrop(container) {
         initialContainerY = container.getBoundingClientRect().top;
 
         window.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp); // Change this line
+        document.addEventListener('mouseup', onMouseUp);
     });
 
     function onMouseMove(e) {
@@ -235,7 +245,7 @@ function initializeDragAndDrop(container) {
 
     function onMouseUp() {
         window.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp); // And this line
+        document.removeEventListener('mouseup', onMouseUp);
         isDragging = false;
     }
 }
@@ -345,6 +355,96 @@ function sendImageForAnalysisEyedropper(imageUrl) {
 
 function activateEyedropperForImage() {
     const imageContainer = document.getElementById('imageContainer');
+    const pixelDisplay = document.createElement('div');
+
+    // Style the pixel display element
+    pixelDisplay.style.width = '30px';
+    pixelDisplay.style.height = '30px';
+    pixelDisplay.style.position = 'absolute';
+    pixelDisplay.style.border = '2px white solid';
+    pixelDisplay.style.borderRadius = '25%';
+    pixelDisplay.style.zIndex = '999999';
+    pixelDisplay.style.visibility = 'hidden'; // Initially hidden
+    document.body.appendChild(pixelDisplay);
+
+    let isDragging = false;
+
+    imageContainer.addEventListener('mousedown', function(event) {
+        isDragging = true;
+        const img = event.target;
+        if (img instanceof HTMLImageElement) {
+            updatePixelDisplay(event, img);
+            animatePixelDisplay('expand'); 
+        }
+    });
+
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+        animatePixelDisplay('shrink');
+        // pixelDisplay.style.visibility = 'hidden'; // Hide when mouse is released
+    });
+
+    imageContainer.addEventListener('mousemove', function(event) {
+        if (!isDragging) return;
+
+        const img = event.target;
+        if (img instanceof HTMLImageElement) {
+            updatePixelDisplay(event, img);
+        }
+    });
+
+    imageContainer.addEventListener('mouseleave', function() {
+        pixelDisplay.style.visibility = 'hidden'; // Hide when cursor leaves the image
+    });
+
+    function updatePixelDisplay(event, img) {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+
+        const x = event.offsetX;
+        const y = event.offsetY;
+        const pixel = ctx.getImageData(x, y, 1, 1).data;
+        const rgb = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+
+        // Update the pixel display element
+        pixelDisplay.style.backgroundColor = rgb;
+        pixelDisplay.style.left = `${event.pageX + 10}px`;
+        pixelDisplay.style.top = `${event.pageY - 30}px`;
+        pixelDisplay.style.visibility = 'visible';
+    }
+
+    function animatePixelDisplay(animationType) {
+        if (animationType === 'expand') {
+            // Animate the pixel display
+            pixelDisplay.animate([
+                // Keyframes
+                { transform: 'scale(.8)', opacity: 1 },
+                { transform: 'scale(1.2)', opacity: 1 },
+                { transform: 'scale(1)', opacity: 1 }
+            ], {
+                // Animation options
+                duration: 100,
+                easing: 'ease-out'
+            });
+        }
+        else if (animationType === 'shrink') {
+            // Shrink animation
+            const animation = pixelDisplay.animate([
+                { transform: 'scale(1)', opacity: 1 },
+                { transform: 'scale(0.8)', opacity: 0.5 }
+            ], {
+                duration: 100,
+                easing: 'ease-out'
+            });
+            // Use the finished promise to hide the element after the animation
+            animation.finished.then(() => {
+                pixelDisplay.style.visibility = 'hidden';
+            });
+        }
+    }
 
     imageContainer.addEventListener('click', function (event) {
         sendInitialEvent('created_color_box', 'eyedropperContainer');
@@ -408,6 +508,7 @@ function activateEyedropperForImage() {
         }
     });
 }
+
 
 function shakeElement(element) {
     console.log('Shake function called');
