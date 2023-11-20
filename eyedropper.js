@@ -59,13 +59,14 @@ function initializeEyedropper() {
     container.style.left = '50%';
     container.style.transform = 'translateX(-50%)';
     container.style.zIndex = '99999';
-    container.style.backgroundColor = '#2a2a2a';
-    container.style.border = '1px solid #000';
+    container.style.backgroundColor = 'rgba(50, 50, 50, 0.5)'; // Semi-transparent background
+    container.style.border = '0.5px solid #000';
     container.style.padding = '20px';
     container.style.borderRadius = '8px';
-    container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.5)';
+    container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.8)';
     container.style.display = 'flex';
     container.style.justifyContent = 'space-between'; // To place child containers side by side
+    container.style.backdropFilter = 'blur(30px)'; // Apply blur effect
 
     // Create close button (acts like a header)
     const closeButton = document.createElement('button');
@@ -167,7 +168,8 @@ function initializeEyedropper() {
 
     const label = document.createElement('label');
     label.innerText = 'Click to pick, right click to delete';
-    label.style.color = '#b0b0b0';
+    label.style.color = '#fff';
+    label.style.fontSize = '12px';
     label.style.marginTop = '10px';
     imageInputContainer.appendChild(label);
 
@@ -187,7 +189,7 @@ function initializeEyedropper() {
     colorBoxesContainer.style.gridAutoRows = '40px'; // Each row is 40px high
     colorBoxesContainer.style.gap = '0px'; // No gap between boxes
     colorBoxesContainer.style.display = 'none';
-    colorBoxesContainer.style.border = '2px solid #8f9aa6';
+    // colorBoxesContainer.style.border = '2px solid #fff';
     colorBoxesContainer.style.borderRadius = '6px'
     colorBoxesContainer.style.padding = '20px';
     colorBoxesContainer.style.overflowY = 'auto'; // Enable vertical scrolling
