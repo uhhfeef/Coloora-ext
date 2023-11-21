@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -73,6 +73,10 @@ function handleImages() {
 
     // Iterate over each image
     images.forEach(img => {
+        // Skip images that are part of the eyedropperContainer
+        if (img.closest('#eyedropperContainer')) {
+            return; // Skip this iteration
+        }
         if (!img.closest('#colorWheelContainer')) {
             // Check if the image dimensions are above 50x50
             if (img.naturalWidth > 50 && img.naturalHeight > 50) {
@@ -110,7 +114,6 @@ function handleImages() {
                     btn.style.opacity = '0';
                 });
 
-                // Add click event to the button
                 // Add click event to the button
                 btn.addEventListener('click', function (e) {
                     sendInitialEvent('color_wheel_cs_clicked', 'CSColorWheel');
