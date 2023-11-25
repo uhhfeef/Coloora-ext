@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -185,20 +185,53 @@ function initializeEyedropper() {
     // Create a container for color boxes
     const colorBoxesContainer = document.createElement('div');
     colorBoxesContainer.id = 'colorBoxesContainer';
-    colorBoxesContainer.style.gridTemplateColumns = 'repeat(5, 40px)'; // 5 boxes in a row, each 40px wide
-    colorBoxesContainer.style.gridAutoRows = '40px'; // Each row is 40px high
-    colorBoxesContainer.style.gap = '0px'; // No gap between boxes
-    colorBoxesContainer.style.display = 'none';
-    // colorBoxesContainer.style.border = '2px solid #fff';
-    colorBoxesContainer.style.borderRadius = '6px'
-    colorBoxesContainer.style.padding = '20px';
+    colorBoxesContainer.style.display = 'flex'; // Changed to flex
+    colorBoxesContainer.style.flexDirection = 'column'; // Stack category containers vertically
     colorBoxesContainer.style.overflowY = 'auto'; // Enable vertical scrolling
-    colorBoxesContainer.style.overflowY = 'scroll';
-    colorBoxesContainer.style.opacity = '0';
-    colorBoxesContainer.style.transition = 'opacity 0.5s ease-in-out';
+    colorBoxesContainer.style.padding = '20px';
     colorContainer.appendChild(colorBoxesContainer);
-    
-    // colorBoxesContainer.style.height = '200px';
+
+    addNewCategory(colorBoxesContainer);
+
+    // // Create the default category container
+    // const defaultCategoryContainer = document.createElement('div');
+    // defaultCategoryContainer.id = 'defaultCategory';
+    // colorBoxesContainer.appendChild(defaultCategoryContainer);
+
+    // // Create the title element
+    // const defaultTitle = document.createElement('div');
+    // defaultTitle.innerText = 'Default';
+    // defaultTitle.style.color = '#fff';  
+    // defaultTitle.style.fontSize = '16px';
+    // defaultTitle.style.marginBottom = '8px';
+    // defaultTitle.style.borderBottom = '1.5px solid #ccc';
+    // defaultTitle.style.paddingBottom = '5px';
+    // defaultCategoryContainer.appendChild(defaultTitle);
+
+    // // Add double click event listener to edit the title
+    // defaultTitle.addEventListener('dblclick', function() {
+    //     editTitle(defaultTitle, defaultCategoryContainer);
+    // });
+
+    // // Create a container for color boxes within the default category
+    // const defaultColorBoxes = document.createElement('div');
+    // defaultColorBoxes.style.display = 'grid';
+    // defaultColorBoxes.style.gridTemplateColumns = 'repeat(5, 40px)';
+    // defaultColorBoxes.style.gridAutoRows = '40px';
+    // defaultCategoryContainer.appendChild(defaultColorBoxes);
+
+    const addCategoryButton = document.createElement('button');
+    addCategoryButton.innerText = '+';
+    addCategoryButton.style.position = 'absolute';
+    addCategoryButton.style.bottom = '10px';
+    addCategoryButton.style.right = '10px';
+    // Placeholder for future functionality
+    addCategoryButton.onclick = function() {
+        console.log('Add new category functionality to be implemented');
+        addNewCategory(colorBoxesContainer);
+    };
+    colorBoxesContainer.appendChild(addCategoryButton);
+
 
     // Append main container to the body
     document.body.appendChild(container);
@@ -207,6 +240,87 @@ function initializeEyedropper() {
     activateEyedropperForImage();
 }
 
+function editTitle(titleElement, container) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = titleElement.innerText;
+    input.style.fontSize = '16px';
+    input.style.width = '100%'; // Take full width of the container
+    input.style.marginBottom = '8px';
+
+    // Replace the title with the input field
+    container.replaceChild(input, titleElement);
+
+    // Focus the input field and select the text
+    input.focus();
+    input.select();
+
+    // Event listener for when the user finishes editing
+    input.addEventListener('blur', function() {
+        titleElement.innerText = input.value || 'Default'; // Use the new title or revert to 'Default' if empty
+        container.replaceChild(titleElement, input);
+    });
+
+    // Also update title on pressing Enter
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            input.blur(); // Trigger the blur event
+        }
+    });
+}
+
+function addNewCategory(container) {
+    // Create a new category container
+    const newCategoryName = 'New Category'; // Default name for new category
+    const newCategoryContainer = createCategoryContainer(newCategoryName);
+    newCategoryContainer.id = newCategoryName.toLowerCase().replace(/\s+/g, '-'); // Convert name to a valid id
+
+    // Add double click event listener to edit the title of the new category
+    const titleElement = newCategoryContainer.querySelector('div');
+    titleElement.addEventListener('dblclick', function() {
+        editTitle(titleElement, newCategoryContainer);
+    });
+
+    // Append the new category container to the main container
+    container.appendChild(newCategoryContainer);
+}
+function createCategoryContainer(categoryName) {
+    // Create the category container
+    const categoryContainer = document.createElement('div');
+    categoryContainer.className = 'category-container';
+    categoryContainer.style.display = 'flex';
+    categoryContainer.style.flexDirection = 'column';
+    categoryContainer.style.marginBottom = '20px';
+
+    // Create the title element
+    const title = document.createElement('div');
+    title.innerText = categoryName;
+    title.style.color = '#fff';
+    title.style.fontSize = '16px';
+    title.style.marginBottom = '8px';
+    title.style.borderBottom = '1.5px solid #ccc';
+    title.style.paddingBottom = '5px';
+
+    // Add double click event listener to edit the title
+    title.addEventListener('dblclick', function() {
+        editTitle(title, categoryContainer);
+    });
+
+    // Append the title to the category container
+    categoryContainer.appendChild(title);
+
+    // Create a container for color boxes within this category
+    const colorBoxes = document.createElement('div');
+    colorBoxes.style.display = 'grid';
+    colorBoxes.style.gridTemplateColumns = 'repeat(5, 40px)';
+    colorBoxes.style.gridAutoRows = '40px';
+    colorBoxes.id = `${categoryName.toLowerCase().replace(/\s+/g, '-')}-color-boxes`;
+
+    // Append the color boxes container to the category container
+    categoryContainer.appendChild(colorBoxes);
+
+    return categoryContainer;
+}
 
 function initializeDragAndDrop(container) {
     let isDragging = false;
@@ -252,18 +366,17 @@ function initializeDragAndDrop(container) {
     }
 }
 
-function extractImageFromPage(url) {
-    return fetch(url)
-        .then(response => response.text())
-        .then(text => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(text, 'text/html');
-            const imgElements = doc.querySelectorAll('img');
-            if (imgElements.length > 0) {
-                return imgElements[0].src;
-            }
-            throw new Error('No images found');
-        });
+async function extractImageFromPage(url) {
+    const response = await fetch(url); // Fetch the page
+    const text = await response.text(); // Get the page content as text
+    const parser = new DOMParser(); // Create a DOM parser
+    const doc = parser.parseFromString(text, 'text/html'); // Parse the page
+    const imgElements = doc.querySelectorAll('img'); // Find all image elements
+    // Return the first image's src attribute
+    if (imgElements.length > 0) { 
+        return imgElements[0].src; 
+    }
+    throw new Error('No images found');
 }
 
 // Analyze image function: Fetch, downsample, analyze, and draw
@@ -295,8 +408,8 @@ function sendImageForAnalysisEyedropper(imageUrl) {
     // showLoadingGif();
 
     // Endpoint where the Flask API is running.
-    // const flaskApiEndpoint = "http://localhost:5000/fetch-image"; //demo
-    const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image";
+    // const flaskApiEndpoint = "http://localhost:5000/fetch-image"; //demo 
+    const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image"; //prod
 
     fetch(flaskApiEndpoint, {
         method: 'POST',
@@ -316,7 +429,7 @@ function sendImageForAnalysisEyedropper(imageUrl) {
                     const aspectRatio = img.naturalWidth / img.naturalHeight;
 
                     // Get half the viewport height
-                    const halfViewportHeight = window.innerHeight / 2;
+                    const halfViewportHeight = window.innerHeight / 2; 
 
                     const colorBoxContainer = document.getElementById('colorBoxesContainer');
 
@@ -356,7 +469,7 @@ function sendImageForAnalysisEyedropper(imageUrl) {
 }
 
 function activateEyedropperForImage() {
-    const imageContainer = document.getElementById('imageContainer');
+    const imageContainer = document.getElementById('imageContainer'); 
     const pixelDisplay = document.createElement('div');
 
     // Style the pixel display element
@@ -382,8 +495,7 @@ function activateEyedropperForImage() {
 
     document.addEventListener('mouseup', function() {
         isDragging = false;
-        animatePixelDisplay('shrink');
-        // pixelDisplay.style.visibility = 'hidden'; // Hide when mouse is released
+        animatePixelDisplay('shrink'); // Shrink animation
     });
 
     imageContainer.addEventListener('mousemove', function(event) {
@@ -391,7 +503,7 @@ function activateEyedropperForImage() {
 
         const img = event.target;
         if (img instanceof HTMLImageElement) {
-            updatePixelDisplay(event, img);
+            updatePixelDisplay(event, img); // Update the pixel display
         }
     });
 
@@ -400,12 +512,14 @@ function activateEyedropperForImage() {
     });
 
     function updatePixelDisplay(event, img) {
+        // Draw the image on a canvas
         const canvas = document.createElement('canvas');
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, img.width, img.height);
 
+        // Get the color of the clicked pixel
         const x = event.offsetX;
         const y = event.offsetY;
         const pixel = ctx.getImageData(x, y, 1, 1).data;
@@ -474,6 +588,10 @@ function activateEyedropperForImage() {
             colorBox.style.height = '40px';
             colorBox.style.backgroundColor = rgb;
 
+            // Append the color box to the last category's color box container
+            const categories = document.querySelectorAll('#colorBoxesContainer > .category-container');
+            const lastCategoryColorBoxes = categories[categories.length - 1].lastChild;
+
             // Add right-click event to delete the color box
             colorBox.addEventListener('contextmenu', function (e) {
                 e.preventDefault(); // Prevent the default context menu from appearing
@@ -487,14 +605,14 @@ function activateEyedropperForImage() {
                     duration: 150,
                     easing: 'ease-out'
                 }).onfinish = function () {
-                    colorBoxesContainer.removeChild(colorBox); // Remove the color box
+                    lastCategoryColorBoxes.removeChild(colorBox); // Remove the color box
                     sendInitialEvent('removed_color_box', 'eyedropperContainer');
                 };
             });
 
-            // Append the color box to the container
-            colorBoxesContainer.appendChild(colorBox);
-            colorBoxesContainer.style.display = 'grid';
+            
+            lastCategoryColorBoxes.appendChild(colorBox); // Append the color box to the last category's color box container
+            colorBoxesContainer.scrollTop = colorBoxesContainer.scrollHeight; // Scroll to the bottom
 
             // Add subtle pop animation
             colorBox.animate([
