@@ -193,32 +193,25 @@ function initializeEyedropper() {
 
     addNewCategory(colorBoxesContainer);
 
-    // // Create the default category container
-    // const defaultCategoryContainer = document.createElement('div');
-    // defaultCategoryContainer.id = 'defaultCategory';
-    // colorBoxesContainer.appendChild(defaultCategoryContainer);
-
-    // // Create the title element
-    // const defaultTitle = document.createElement('div');
-    // defaultTitle.innerText = 'Default';
-    // defaultTitle.style.color = '#fff';  
-    // defaultTitle.style.fontSize = '16px';
-    // defaultTitle.style.marginBottom = '8px';
-    // defaultTitle.style.borderBottom = '1.5px solid #ccc';
-    // defaultTitle.style.paddingBottom = '5px';
-    // defaultCategoryContainer.appendChild(defaultTitle);
-
-    // // Add double click event listener to edit the title
-    // defaultTitle.addEventListener('dblclick', function() {
-    //     editTitle(defaultTitle, defaultCategoryContainer);
-    // });
-
-    // // Create a container for color boxes within the default category
-    // const defaultColorBoxes = document.createElement('div');
-    // defaultColorBoxes.style.display = 'grid';
-    // defaultColorBoxes.style.gridTemplateColumns = 'repeat(5, 40px)';
-    // defaultColorBoxes.style.gridAutoRows = '40px';
-    // defaultCategoryContainer.appendChild(defaultColorBoxes);
+    // create a copy to clipboard button
+    const copyButton = document.createElement('button');
+    copyButton.innerText = '📋';
+    copyButton.style.fontSize = '16px';
+    copyButton.style.color = '#fff';
+    copyButton.style.position = 'absolute';
+    copyButton.style.bottom = '20px';
+    copyButton.style.right = '40px';
+    copyButton.style.backgroundColor = 'transparent'; // Set button color to transparent
+    copyButton.style.outline = 'none'; // Remove outline
+    copyButton.style.border = 'none'; // Remove border
+    copyButton.style.outline = 'none'; // Remove outline
+    copyButton.style.cursor = 'pointer'; // Change cursor to pointer on hover
+    colorBoxesContainer.appendChild(copyButton);
+    // Add event listener to the copy button
+    copyButton.addEventListener('click', function() {
+        alert('This feature is coming soon');
+        sendInitialEvent('copy_palette_clicked', 'eyedropperContainer');
+    });
 
     const addCategoryButton = document.createElement('button');
     addCategoryButton.innerText = '+';
@@ -237,7 +230,6 @@ function initializeEyedropper() {
         addNewCategory(colorBoxesContainer);
     };
     colorBoxesContainer.appendChild(addCategoryButton);
-
 
     // Append main container to the body
     document.body.appendChild(container);
