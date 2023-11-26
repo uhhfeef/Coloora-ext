@@ -1,6 +1,6 @@
-const now = new Date();
-const fifteenDays = 1000*60*60*24*1 // seven days in milliseconds
-const extpay = ExtPay('phdgnljpgjngdcmkfoakcechbmikjmok')   
+// const now = new Date();
+// const fifteenDays = 1000*60*60*24*1 // seven days in milliseconds
+// const extpay = ExtPay('phdgnljpgjngdcmkfoakcechbmikjmok')   
 
 document.getElementById('colorWheelBtn').addEventListener('click', function () {
     chrome.runtime.sendMessage({ action: "executeColorWheelScript" });
@@ -32,13 +32,17 @@ document.getElementById('eyedropperBtn').addEventListener('click', function () {
     chrome.runtime.sendMessage({ action: "executeEyedropper" });
 });
 
+document.getElementById('gradientBtn').addEventListener('click', function () {
+    chrome.runtime.sendMessage({ action: "executeGradient" });
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     const manifestData = chrome.runtime.getManifest();
     const currentVersion = manifestData.version;
     document.getElementById("version").textContent = currentVersion;
 });
 
-document.addEventListener("DOMContentLoaded", function () {
+// document.addEventListener("DOMContentLoaded", function () {
     // extpay.getUser().then(user => {
     //     if (user.trialStartedAt && (now - user.trialStartedAt) < fifteenDays) {
     //         // user has an active trial
@@ -65,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //         paymentLink.textContent = 'Thx for your support :)';
     //     }
     // })
-});
+// });
 
 
 // document.getElementById('featureRequestLink').addEventListener('click', function () {

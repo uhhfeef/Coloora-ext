@@ -74,7 +74,7 @@ function handleImages() {
     // Iterate over each image
     images.forEach(img => {
         // Skip images that are part of the eyedropperContainer
-        if (img.closest('#eyedropperContainer')) {
+        if (img.closest('#eyedropperContainer') && !img.closest('#gradientContainer')) {
             return; // Skip this iteration
         }
         if (!img.closest('#colorWheelContainer')) {
