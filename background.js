@@ -1,4 +1,4 @@
-importScripts('ExtPay.js')
+// importScripts('ExtPay.js') // dont enable until extpay issue is resolved
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === "executeColorWheelScript") {
@@ -45,8 +45,23 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
-var extpay = ExtPay('phdgnljpgjngdcmkfoakcechbmikjmok'); 
-extpay.startBackground(); 
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === "executeGradient") {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            const tabId = tabs[0].id;
+            chrome.scripting.executeScript({
+                target: { tabId: tabId },
+                files: ['gradient.js']
+            }, () => {
+                // After injecting the content script, send the message
+                chrome.tabs.sendMessage(tabId, { action: "createGradient" });
+            });
+        });
+    }
+});
+
+// var extpay = ExtPay('phdgnljpgjngdcmkfoakcechbmikjmok'); 
+// extpay.startBackground(); 
 
 // chrome.action.onClicked.addListener(function (tab) {
 //     chrome.scripting.executeScript({
