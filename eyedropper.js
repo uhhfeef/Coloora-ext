@@ -2,10 +2,10 @@
 
 // Works here
 async function getOrCreateClientId() {
-    const result = await chrome.storage.local.get('clientId');
+    const result = await chrome.storage.local.get('clientId'); 
     console.log('inside getor create')
 
-    let clientId = result.clientId;
+    let clientId = result.clientId; 
     if (!clientId) {
         // Generate a unique client ID, the actual value is not relevant
         clientId = self.crypto.randomUUID();
@@ -222,12 +222,18 @@ function initializeEyedropper() {
 
     const addCategoryButton = document.createElement('button');
     addCategoryButton.innerText = '+';
+    addCategoryButton.style.fontSize = '16px';
+    addCategoryButton.style.color = '#fff';
     addCategoryButton.style.position = 'absolute';
-    addCategoryButton.style.bottom = '10px';
-    addCategoryButton.style.right = '10px';
+    addCategoryButton.style.bottom = '20px';
+    addCategoryButton.style.right = '20px';
+    addCategoryButton.style.backgroundColor = 'transparent'; // Set button color to transparent
+    addCategoryButton.style.outline = 'none'; // Remove outline
+    addCategoryButton.style.border = 'none'; // Remove border
+    addCategoryButton.style.outline = 'none'; // Remove outline
+    addCategoryButton.style.cursor = 'pointer'; // Change cursor to pointer on hover
     // Placeholder for future functionality
     addCategoryButton.onclick = function() {
-        console.log('Add new category functionality to be implemented');
         addNewCategory(colorBoxesContainer);
     };
     colorBoxesContainer.appendChild(addCategoryButton);
@@ -412,18 +418,20 @@ function sendImageForAnalysisEyedropper(imageUrl) {
     const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image"; //prod
 
     fetch(flaskApiEndpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
+        // Send the image URL to the Flask API
+        method: 'POST', // Send a POST request
+        headers: { 
+            'Content-Type': 'application/json', // Send the image URL in JSON format
         },
-        body: JSON.stringify({ imageURL: imageUrl })
+        body: JSON.stringify({ imageURL: imageUrl }) // Send the image URL in the request body
     })
-        .then(response => response.json())
+        // Get the response from the Flask API
+        .then(response => response.json()) 
         .then(data => {
-            if (data.success && data.dataURL) {
+            if (data.success && data.dataURL) { // If the response is successful
                 // Create an image element
-                const img = new Image();
-                img.src = data.dataURL;
+                const img = new Image(); // Create a new image element
+                img.src = data.dataURL; // Set the image source to the data URL
                 img.onload = function () {
                     // Calculate the aspect ratio
                     const aspectRatio = img.naturalWidth / img.naturalHeight;
@@ -629,7 +637,6 @@ function activateEyedropperForImage() {
     });
 }
 
-
 function shakeElement(element) {
     console.log('Shake function called');
     let shakes = 5;
@@ -659,8 +666,6 @@ function shakeElement(element) {
 
     animateShake();
 }
-
-
 
 // Adopt Content Script Behavior
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
