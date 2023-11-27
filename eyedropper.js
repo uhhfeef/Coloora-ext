@@ -204,14 +204,19 @@ function initializeEyedropper() {
     // Add event listener to the copy button
     copyButton.addEventListener('click', function() {
         sendInitialEvent('copy_palette_clicked', 'eyedropperContainer');
+        copyButton.innerText = '✅'; // Change the button text to a tick symbol
         copyColorBoxesAsImage();
+
+        setTimeout(function() {
+            copyButton.innerText = '📋'; // Revert the button text to the original symbol
+        }, 1500); // Delay for 2 seconds (2000 milliseconds)
     });
 
     // Create a button to add a new category
     const addCategoryButton = document.createElement('button');
     addCategoryButton.id = 'addCategoryButton'; 
     addCategoryButton.innerText = '+';
-    addCategoryButton.style.fontSize = '16px';
+    addCategoryButton.style.fontSize = '20px';
     addCategoryButton.style.color = '#fff';
     addCategoryButton.style.position = 'absolute';
     addCategoryButton.style.bottom = '20px';
@@ -386,19 +391,30 @@ function copyColorBoxesAsImage() {
         ctx.fillStyle = '#000'; // Text color
         ctx.font = '16px Arial'; // Adjust font style as needed
         ctx.fillText(categoryName, 0, yOffset + 16); // Adjust text position as needed
-        yOffset += 20; // Adjust space for category name
-
+        yOffset += 30; // Adjust space for category name
+    
         // Draw color boxes
         const colorBoxes = category.querySelectorAll('div[id$="-color-boxes"] > div');
         let xOffset = 0;
+        let rowHeight = 0;
         for (const box of colorBoxes) {
-            const color = box.style.backgroundColor; // Get the color of the box
-            ctx.fillStyle = color; // Color of the box
-            ctx.fillRect(xOffset, yOffset, box.offsetWidth, box.offsetHeight); // Draw the color box
-            xOffset += box.offsetWidth; 
+            const color = box.style.backgroundColor;
+            ctx.fillStyle = color;
+            ctx.fillRect(xOffset, yOffset, box.offsetWidth, box.offsetHeight);
+            xOffset += box.offsetWidth + 5; // 5px for margin between boxes
+    
+            // Update rowHeight to the tallest box in the current row
+            rowHeight = Math.max(rowHeight, box.offsetHeight);
+    
+            // Move to next row if end of current row is reached
+            if (xOffset + box.offsetWidth > canvas.width) {
+                xOffset = 0;
+                yOffset += rowHeight + 5; // 5px for margin between rows
+                rowHeight = 0;
+            }
         }
-        yOffset += category.offsetHeight + 10; // 10px for margin
-    }
+        yOffset += rowHeight + 20; // Space after each category
+    }    
 
     // Convert the canvas to a blob and copy to clipboard
     canvas.toBlob(function(blob) {
