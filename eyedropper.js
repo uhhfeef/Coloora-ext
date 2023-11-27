@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -203,8 +203,8 @@ function initializeEyedropper() {
     colorBoxesContainer.appendChild(copyButton);
     // Add event listener to the copy button
     copyButton.addEventListener('click', function() {
-        alert('This feature is coming soon');
         sendInitialEvent('copy_palette_clicked', 'eyedropperContainer');
+        copyColorBoxesAsImage();
     });
 
     // Create a button to add a new category
@@ -359,6 +359,54 @@ function initializeDragAndDrop(container) {
         document.removeEventListener('mouseup', onMouseUp);
         isDragging = false;
     }
+}
+
+function copyColorBoxesAsImage() {
+    const colorBoxesContainer = document.getElementById('colorBoxesContainer');
+    const categories = colorBoxesContainer.getElementsByClassName('category-container');
+    
+    // Calculate the size of the canvas
+    let canvasWidth = 200; // Adjust as needed
+    let canvasHeight = 0;
+    for (const category of categories) {
+        canvasHeight += category.offsetHeight + 10; // 10px for margin
+    }
+
+    // Create a canvas element
+    const canvas = document.createElement('canvas');
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    const ctx = canvas.getContext('2d');
+
+    // Draw color boxes and category names on the canvas
+    let yOffset = 0;
+    for (const category of categories) {
+        // Draw category name
+        const categoryName = category.querySelector('div').innerText;
+        ctx.fillStyle = '#000'; // Text color
+        ctx.font = '16px Arial'; // Adjust font style as needed
+        ctx.fillText(categoryName, 0, yOffset + 16); // Adjust text position as needed
+        yOffset += 20; // Adjust space for category name
+
+        // Draw color boxes
+        const colorBoxes = category.querySelectorAll('div[id$="-color-boxes"] > div');
+        let xOffset = 0;
+        for (const box of colorBoxes) {
+            const color = box.style.backgroundColor; // Get the color of the box
+            ctx.fillStyle = color; // Color of the box
+            ctx.fillRect(xOffset, yOffset, box.offsetWidth, box.offsetHeight); // Draw the color box
+            xOffset += box.offsetWidth; 
+        }
+        yOffset += category.offsetHeight + 10; // 10px for margin
+    }
+
+    // Convert the canvas to a blob and copy to clipboard
+    canvas.toBlob(function(blob) {
+        const item = new ClipboardItem({ "image/png": blob });
+        navigator.clipboard.write([item])
+            .then(() => console.log("Color boxes with category names copied as image to clipboard"))
+            .catch(err => console.error("Error copying image to clipboard", err));
+    });
 }
 
 async function extractImageFromPage(url) {
