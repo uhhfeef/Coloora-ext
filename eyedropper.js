@@ -158,14 +158,8 @@ function initializeEyedropper() {
             });
         }
     });
-
-    // Create a div for input and button to make them inline
-    const inputContainer = document.createElement('div');
-    inputContainer.style.display = 'flex';
-    inputContainer.style.justifyContent = 'center';
     
     // Create label for color boxes
-
     const label = document.createElement('label');
     label.innerText = 'Click to pick, right click to delete';
     label.style.color = '#fff';
@@ -213,7 +207,9 @@ function initializeEyedropper() {
         sendInitialEvent('copy_palette_clicked', 'eyedropperContainer');
     });
 
+    // Create a button to add a new category
     const addCategoryButton = document.createElement('button');
+    addCategoryButton.id = 'addCategoryButton'; 
     addCategoryButton.innerText = '+';
     addCategoryButton.style.fontSize = '16px';
     addCategoryButton.style.color = '#fff';
@@ -228,6 +224,7 @@ function initializeEyedropper() {
     // Placeholder for future functionality
     addCategoryButton.onclick = function() {
         addNewCategory(colorBoxesContainer);
+        sendInitialEvent('added_category', 'addCategoryButton');
     };
     colorBoxesContainer.appendChild(addCategoryButton);
 
