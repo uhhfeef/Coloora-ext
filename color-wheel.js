@@ -48,10 +48,8 @@ console.log("Content script loaded!");
 var canvas = document.createElement("canvas");
 canvas.id = "colorWheel";
 let ctx_colorwheel;
-let center;
+let center_color_wheel;
 let radius;
-let imageUrlInputWheel = document.getElementById('imageUrl');
-let analyzeButtonWheel = document.getElementById('analyzeButtonWheel');
 
 // Initialization: Setting up the UI
 function initializeUIWheel() {
@@ -63,12 +61,17 @@ function initializeUIWheel() {
     container.style.top = '10%';
     container.style.left = '50%';
     container.style.transform = 'translateX(-50%)';
+    container.style.backgroundColor = 'rgba(50, 50, 50, 0.5)'; // Semi-transparent background
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.justifyContent = 'center'; // Center the contents vertically
+    container.style.alignItems = 'center'; // Center the contents horizontally
     container.style.zIndex = '99999';
-    container.style.backgroundColor = '#2a2a2a';
-    container.style.border = '1px solid #000';
+    container.style.border = '0.5px solid #000';
     container.style.padding = '10px';
     container.style.borderRadius = '8px';
     container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.5)';
+    container.style.backdropFilter = 'blur(30px)'; // Apply blur effect
 
     // Create close button
     const closeButton = document.createElement('button');
@@ -131,62 +134,81 @@ function initializeUIWheel() {
     canvas.width = 250;   // Set canvas size
     canvas.height = 250;
     ctx_colorwheel = canvas.getContext("2d");
-    center = { x: canvas.width / 2, y: canvas.height / 2 };
+    center_color_wheel = { x: canvas.width / 2, y: canvas.height / 2 };
     radius = canvas.width / 2;
 
-    container.appendChild(canvas);
+    canvas.style.border = 'none';
+    canvas.style.transition = 'background-color 0.3s'; // Smooth transition for background color
+
+    // Prevent default drag behavior
+    canvas.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+    });
+
+    // Handle drag over event
+    canvas.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        canvas.style.backgroundColor = 'rgba(128, 128, 128, 0.5)'; // Change background color
+        canvas.style.border = '2px dashed #ccc';
+    });
+
+    // Handle drag leave event
+    canvas.addEventListener('dragleave', function(e) {
+        canvas.style.backgroundColor = 'transparent'; // Revert background color
+        canvas.style.border = 'none';
+    });
+
+    // Handle drop event
+    canvas.addEventListener('drop', function(e) {
+        e.preventDefault();
+        canvas.style.border = 'none';
+        canvas.style.backgroundColor = 'transparent'; // Revert background color
+
+        // Get the URL from the dropped item
+        const url = e.dataTransfer.getData('text');
+
+        // Create an image and draw it on the canvas
+        const img = new Image();
+        img.onload = function() {
+            ctx_colorwheel.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+            ctx_colorwheel.drawImage(img, 0, 0, canvas.width, canvas.height); // Draw the image
+        };
+        img.src = url;
+
+        analyzeImageWheel(url);
+    });
+    container.appendChild(canvas); // Append the canvas to the container
+
+    // Create label for color boxes
+    const label = document.createElement('label');
+    label.innerText = 'Drag n drop any image here';
+    label.style.color = '#fff';
+    label.style.fontSize = '12px';
+    label.style.marginTop = '15px';
+    container.appendChild(label);
+
     document.body.appendChild(container);
     drawColorWheel();
-
-    // Create a div for input and button to make them inline
-    const inputContainer = document.createElement('div');
-    inputContainer.style.display = 'flex';
-    inputContainer.style.justifyContent = 'space-between';
-    inputContainer.style.marginBottom = '10px';
-
-    // Create input for image URL
-    imageUrlInputWheel = document.createElement('input');
-    imageUrlInputWheel.id = 'imageUrl';
-    imageUrlInputWheel.type = 'text';
-    imageUrlInputWheel.placeholder = 'Enter image URL';
-    imageUrlInputWheel.style.flex = '1';
-    imageUrlInputWheel.style.marginRight = '10px';
-    inputContainer.appendChild(imageUrlInputWheel);
-
-    // Create analyze button
-    analyzeButtonWheel = document.createElement('button');
-    analyzeButtonWheel.id = 'analyzeButtonWheel';
-    analyzeButtonWheel.innerText = 'Analyze Image';
-    analyzeButtonWheel.onclick = function () {
-        analyzeImageWheel(imageUrlInputWheel.value);
-    };
-    inputContainer.appendChild(analyzeButtonWheel);
-
-    // Append inputContainer to main container
-    container.appendChild(inputContainer);
 }
 
-function extractImageFromPage(url) {
-    return fetch(url)
-        .then(response => response.text())
-        .then(text => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(text, 'text/html');
-            const imgElements = doc.querySelectorAll('img');
-            if (imgElements.length > 0) {
-                return imgElements[0].src;
-            }
-            throw new Error('No images found');
-        });
+async function extractImageFromPage(url) {
+    const response = await fetch(url);
+    const text = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+    const imgElements = doc.querySelectorAll('img');
+    if (imgElements.length > 0) {
+        return imgElements[0].src;
+    }
+    throw new Error('No images found');
 }
 
 // Analyze image function: Fetch, downsample, analyze, and draw
 function analyzeImageWheel(imageUrl) {
     if (!imageUrl) {
-        shakeElement(imageUrlInputWheel);
+        shakeElement(imageUrlInputWheel); //change this
         return; // Terminate the function
     }
-    imageUrlInputWheel.value = '';
 
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
         extractImageFromPage(imageUrl)
@@ -195,7 +217,7 @@ function analyzeImageWheel(imageUrl) {
                 sendImageForAnalysisWheel(directImageUrl);
             })
             .catch(error => {
-                shakeElement(imageUrlInputWheel);
+                shakeElement(imageUrlInputWheel); // change
                 console.error('Failed to extract direct image URL:', error);
             });
     } else {
@@ -273,7 +295,7 @@ function drawColorWheel() {
         for (let r = 0; r < radius; r++) {
             ctx_colorwheel.beginPath();
             ctx_colorwheel.strokeStyle = getColorByAngleAndRadius(angle, r);
-            ctx_colorwheel.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
+            ctx_colorwheel.arc(center_color_wheel.x, center_color_wheel.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
             ctx_colorwheel.stroke();
         }
     }
@@ -342,7 +364,7 @@ function updateColorWheel(colorData) {
                 ctx_colorwheel.strokeStyle = getColorByAngleAndRadius(angle, r, 10); // Reduced brightness to 10% for unmatched hues/saturations
             }
 
-            ctx_colorwheel.arc(center.x, center.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
+            ctx_colorwheel.arc(center_color_wheel.x, center_color_wheel.y, r, (angle - 0.5) * (Math.PI / 180), (angle + 0.5) * (Math.PI / 180));
             ctx_colorwheel.stroke();
         }
     }
@@ -365,7 +387,7 @@ function showLoadingGif() {
     loadingGif.style.display = 'block';
     loadingGif.style.position = 'absolute';
 
-    // Calculate the center position of the canvas
+    // Calculate the center_color_wheel position of the canvas
     const canvasRect = colorWheelElement.getBoundingClientRect();
     const containerRect = colorWheelContainer.getBoundingClientRect();
 
