@@ -401,7 +401,7 @@ function copyColorBoxesAsImage() {
             const color = box.style.backgroundColor;
             ctx.fillStyle = color;
             ctx.fillRect(xOffset, yOffset, box.offsetWidth, box.offsetHeight);
-            xOffset += box.offsetWidth + 5; // 5px for margin between boxes
+            xOffset += box.offsetWidth; // 5px for margin between boxes
     
             // Update rowHeight to the tallest box in the current row
             rowHeight = Math.max(rowHeight, box.offsetHeight);
@@ -409,12 +409,13 @@ function copyColorBoxesAsImage() {
             // Move to next row if end of current row is reached
             if (xOffset + box.offsetWidth > canvas.width) {
                 xOffset = 0;
-                yOffset += rowHeight + 5; // 5px for margin between rows
+                yOffset += rowHeight; // 5px for margin between rows
                 rowHeight = 0;
             }
         }
         yOffset += rowHeight + 20; // Space after each category
-    }    
+    }
+    
 
     // Convert the canvas to a blob and copy to clipboard
     canvas.toBlob(function(blob) {
