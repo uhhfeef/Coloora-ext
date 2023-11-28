@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -61,8 +61,6 @@ function debounce(func, wait) {
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
-
-console.log('testcs loaded');
 
 let isUIInitialized = false; // Declare the flag outside the function
 
@@ -238,18 +236,16 @@ function initializeUIWheel() {
     drawColorWheel();
 }
 
-function extractImageFromPage(url) {
-    return fetch(url)
-        .then(response => response.text())
-        .then(text => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(text, 'text/html');
-            const imgElements = doc.querySelectorAll('img');
-            if (imgElements.length > 0) {
-                return imgElements[0].src;
-            }
-            throw new Error('No images found');
-        });
+async function extractImageFromPage(url) {
+    const response = await fetch(url);
+    const text = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+    const imgElements = doc.querySelectorAll('img');
+    if (imgElements.length > 0) {
+        return imgElements[0].src;
+    }
+    throw new Error('No images found');
 }
 
 // Analyze image function: Fetch, downsample, analyze, and draw
@@ -490,9 +486,13 @@ function shakeElement(element) {
 
 // Initialize the MutationObserver
 const observer = new MutationObserver((mutationsList) => {
+    // Handle added nodes
     for (let mutation of mutationsList) {
+        // Check if the mutation is a childList mutation
         if (mutation.type === 'childList') {
+            // Iterate over all added nodes
             for (let addedNode of mutation.addedNodes) {
+                // Check if the added node is an element
                 if (addedNode.nodeType === Node.ELEMENT_NODE) {
                     // If an IMG element is added, handle it
                     if (addedNode.tagName === 'IMG') {
@@ -521,10 +521,8 @@ observer.observe(document.body, config);
 function restartContentScript() {
     console.log("Restarting content script due to URL change...");
 
-    // Clear any existing data or listeners related to your content script
-    // For example, you might want to remove any buttons you've added to the page
-    const existingButtons = document.querySelectorAll('#injectColorWheel');
-    existingButtons.forEach(btn => btn.remove());
+    const existingButtons = document.querySelectorAll('#injectColorWheel'); // Select all existing buttons
+    existingButtons.forEach(btn => btn.remove()); // Remove all existing buttons
 
     // Re-run your content script initialization code
     handleImages();
