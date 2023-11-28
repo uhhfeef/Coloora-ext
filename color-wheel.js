@@ -47,9 +47,9 @@ console.log("Content script loaded!");
 // Constants and DOM elements
 var canvas = document.createElement("canvas");
 canvas.id = "colorWheel";
-let ctx_colorwheel;
-let center_color_wheel;
-let radius;
+var ctx_colorwheel;
+var center_color_wheel;
+var radius;
 
 // Initialization: Setting up the UI
 function initializeUIWheel() {
@@ -174,6 +174,7 @@ function initializeUIWheel() {
             ctx_colorwheel.drawImage(img, 0, 0, canvas.width, canvas.height); // Draw the image
         };
         img.src = url;
+        console.log("Dropped image URL:", url);
 
         analyzeImageWheel(url);
     });
@@ -192,11 +193,14 @@ function initializeUIWheel() {
 }
 
 async function extractImageFromPage(url) {
-    const response = await fetch(url);
-    const text = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, 'text/html');
-    const imgElements = doc.querySelectorAll('img');
+    const response = await fetch(url); // Fetch the page
+    const text = await response.text(); // Get the page content as text
+    const parser = new DOMParser(); // Parse the text as HTML
+    const doc = parser.parseFromString(text, 'text/html'); // Get the document object
+    const imgElements = doc.querySelectorAll('img'); // Find all img elements
+    console.log("Found images:", imgElements);
+    
+    // Return the first image's src attribute
     if (imgElements.length > 0) {
         return imgElements[0].src;
     }
@@ -210,8 +214,9 @@ function analyzeImageWheel(imageUrl) {
         return; // Terminate the function
     }
 
+    // Check if the URL is a direct link to an image
     if (!imageUrl.match(/\.(jpeg|jpg|gif|png)(\?|$)/)) {
-        extractImageFromPage(imageUrl)
+        extractImageFromPage(imageUrl) 
             .then(directImageUrl => {
                 sendInitialEvent("color_wheel_analysis", "analyzeButtonWheel"); // Calling the async function immediately
                 sendImageForAnalysisWheel(directImageUrl);
