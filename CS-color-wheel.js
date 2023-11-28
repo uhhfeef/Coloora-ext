@@ -1,5 +1,12 @@
 // var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
+// Function to check if the user is on a Mac
+function isMacUser() {
+    return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+}
+
+
+
 // Works here
 async function getOrCreateClientId() {
     const result = await chrome.storage.local.get('clientId');
@@ -74,6 +81,11 @@ function handleImages() {
         // Skip images that are part of the eyedropperContainer
         if (img.closest('#eyedropperContainer') && !img.closest('#gradientContainer')) {
             return; // Skip this iteration
+        }
+        // If the user is on a Mac, exit the script
+        if (isMacUser()) {
+            console.log("Mac user detected. Exiting script.");
+            return;
         }
         if (!img.closest('#colorWheelContainer')) {
             // Check if the image dimensions are above 50x50
