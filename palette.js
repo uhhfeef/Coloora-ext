@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -58,15 +58,16 @@ function initializeUIPalette() {
     container.style.left = '50%';
     container.style.transform = 'translateX(-50%)';
     container.style.zIndex = '99999';
-    container.style.backgroundColor = '#2a2a2a';
+    container.style.backgroundColor = 'rgba(50, 50, 50, 0.5)'; // Semi-transparent background
     container.style.border = '1px solid #000';
     container.style.padding = '20px 30px 10px 30px';
     container.style.paddingRight = '30px';  // Set paddingRight after the general padding
     container.style.paddingLeft = '30px';
     container.style.borderRadius = '8px';
-    container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.5)';
+    container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.8)';
     container.style.display = 'flex';
     container.style.flexDirection = 'column'; // Stack children vertically 
+    container.style.backdropFilter = 'blur(30px)'; // Apply blur effect
 
     // Create close button (acts like a header)
     const closeButton = document.createElement('button');
