@@ -1,4 +1,4 @@
-// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -88,6 +88,16 @@ function initializeUIPalette() {
     };
     container.appendChild(closeButton);
 
+    // Create a new container for palette and button
+    const paletteAndButtonContainer = document.createElement('div');
+    paletteAndButtonContainer.id = 'paletteAndButtonContainer';
+    paletteAndButtonContainer.style.display = 'flex';
+    paletteAndButtonContainer.style.justifyContent = 'space-between';
+    paletteAndButtonContainer.style.alignItems = 'center'; // Align items vertically
+    paletteAndButtonContainer.style.width = '100%';
+    paletteAndButtonContainer.style.marginTop = '10px';
+    paletteAndButtonContainer.style.marginBottom = '10px';
+
     // Create palette container for color boxes
     const paletteContainer = document.createElement('div');
     paletteContainer.id = 'paletteContainer';
@@ -96,6 +106,24 @@ function initializeUIPalette() {
     paletteContainer.style.width = '100%';
     paletteContainer.style.marginTop = '10px';
     paletteContainer.style.marginBottom = '10px';
+
+    // Create a button for adding colors
+    const addButton = document.createElement('button');
+    addButton.innerText = '+';
+    addButton.style.fontSize = '20px';
+    addButton.style.width = '40px';
+    addButton.style.height = '40px';
+    addButton.style.backgroundColor = 'transparent';
+    addButton.style.color = 'white';
+    addButton.style.border = 'none';
+    addButton.style.cursor = 'pointer';
+    addButton.onclick = () => {
+        alert('Feature coming soon!');
+        sendInitialEvent("auto_palette_add_color_29_11", "addButton"); // Calling the async function immediately
+    };
+    paletteAndButtonContainer.appendChild(paletteContainer);
+    paletteAndButtonContainer.appendChild(addButton);
+    container.appendChild(paletteAndButtonContainer);
 
     // Create and append five color boxes to the palette container
     for (let i = 0; i < 5; i++) {
@@ -106,8 +134,6 @@ function initializeUIPalette() {
         colorBox.style.backgroundColor = 'grey'; // default color
         paletteContainer.appendChild(colorBox);
     }
-
-    container.appendChild(paletteContainer); // Append palette container to main container
 
     // Drag and drop
     let isDragging = false;
