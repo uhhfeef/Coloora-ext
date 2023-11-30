@@ -1,4 +1,4 @@
-// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -58,7 +58,7 @@ function initializeEyedropper() {
     container.style.top = '10%';
     container.style.left = '50%';
     container.style.transform = 'translateX(-50%)';
-    container.style.zIndex = '10';
+    container.style.zIndex = '1000';
     container.style.backgroundColor = 'rgba(50, 50, 50, 0.5)'; // Semi-transparent background
     container.style.border = '0.5px solid #000';
     container.style.padding = '20px';
@@ -652,6 +652,7 @@ function activateEyedropperForImage() {
             colorBoxContainer.style.display = 'flex';
             colorBoxContainer.style.justifyContent = 'center';
             colorBoxContainer.style.alignItems = 'center';
+            colorBoxContainer.style.transition = 'transform 0.3s ease';
 
             // Create a new color box
             const colorBox = document.createElement('input');
@@ -664,6 +665,7 @@ function activateEyedropperForImage() {
             colorBox.style.backgroundColor = rgb;
             colorBox.style.boxShadow = 'none'; // Remove box shadow
             colorBox.style.outline = 'none'; // Remove outline
+            colorBox.style.cursor = 'pointer';
                 
             // Append the color box to the last category's color box container
             const categories = document.querySelectorAll('#colorBoxesContainer > .category-container');
@@ -686,7 +688,7 @@ function activateEyedropperForImage() {
                     duration: 150,
                     easing: 'ease-out'
                 }).onfinish = function () {
-                    lastCategoryColorBoxes.removeChild(colorBox); // Remove the color box
+                    lastCategoryColorBoxes.removeChild(colorBoxContainer); // Remove the color box
                     sendInitialEvent('removed_color_box', 'eyedropperContainer');
                 };
             });
@@ -706,6 +708,16 @@ function activateEyedropperForImage() {
             });
 
             console.log(rgb);
+
+            // Event listener for mouse enter (hover)
+            colorBoxContainer.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(0.8)'; // Scales down the box
+            });
+
+            // Event listener for mouse leave
+            colorBoxContainer.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)'; // Returns to original scale
+            });
         }
     });
 }
