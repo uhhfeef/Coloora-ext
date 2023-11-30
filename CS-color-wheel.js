@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Function to check if the user is on a Mac
 function isMacUser() {
@@ -172,12 +172,17 @@ function initializeUIWheel() {
     container.style.top = '10%';
     container.style.left = '50%';
     container.style.transform = 'translateX(-50%)';
+    container.style.backgroundColor = 'rgba(50, 50, 50, 0.5)'; // Semi-transparent background
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.justifyContent = 'center'; // Center the contents vertically
+    container.style.alignItems = 'center'; // Center the contents horizontally
     container.style.zIndex = '99999';
-    container.style.backgroundColor = '#2a2a2a';
-    container.style.border = '1px solid #000';
+    container.style.border = '0.5px solid #000';
     container.style.padding = '10px';
     container.style.borderRadius = '8px';
     container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.5)';
+    container.style.backdropFilter = 'blur(30px)'; // Apply blur effect
 
     // Create close button
     const closeButton = document.createElement('button');
