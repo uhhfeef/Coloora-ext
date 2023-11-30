@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -58,7 +58,7 @@ function initializeEyedropper() {
     container.style.top = '10%';
     container.style.left = '50%';
     container.style.transform = 'translateX(-50%)';
-    container.style.zIndex = '99999';
+    container.style.zIndex = '10';
     container.style.backgroundColor = 'rgba(50, 50, 50, 0.5)'; // Semi-transparent background
     container.style.border = '0.5px solid #000';
     container.style.padding = '20px';
@@ -540,7 +540,7 @@ function activateEyedropperForImage() {
     pixelDisplay.style.position = 'absolute';
     pixelDisplay.style.border = '2px white solid';
     pixelDisplay.style.borderRadius = '25%';
-    pixelDisplay.style.zIndex = '999999';
+    pixelDisplay.style.zIndex = '99999';
     pixelDisplay.style.visibility = 'hidden'; // Initially hidden
     document.body.appendChild(pixelDisplay);
 
@@ -643,16 +643,35 @@ function activateEyedropperForImage() {
             const pixel = ctx.getImageData(x, y, 1, 1).data;
             console.log(pixel); // This will log [R, G, B, A]
             const rgb = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+            const hexColor = rgbToHex(rgb); // Convert RGB to HEX
+
+            const colorBoxContainer = document.createElement('div');
+            colorBoxContainer.style.width = '40px';
+            colorBoxContainer.style.height = '40px';
+            colorBoxContainer.style.overflow = 'hidden'; // Ensures the color input fits snugly
+            colorBoxContainer.style.display = 'flex';
+            colorBoxContainer.style.justifyContent = 'center';
+            colorBoxContainer.style.alignItems = 'center';
 
             // Create a new color box
-            const colorBox = document.createElement('div');
-            colorBox.style.width = '40px';
-            colorBox.style.height = '40px';
+            const colorBox = document.createElement('input');
+            colorBox.type = 'color';
+            colorBox.value = hexColor;
+            colorBox.style.width = "calc(100% + 20px)";
+            colorBox.style.height = 'calc(100% + 20px)';
+            colorBox.style.margin = '-6px';
+            colorBox.style.border = 'none';
             colorBox.style.backgroundColor = rgb;
-
+            colorBox.style.boxShadow = 'none'; // Remove box shadow
+            colorBox.style.outline = 'none'; // Remove outline
+                
             // Append the color box to the last category's color box container
             const categories = document.querySelectorAll('#colorBoxesContainer > .category-container');
             const lastCategoryColorBoxes = categories[categories.length - 1].lastChild;
+
+            colorBox.addEventListener('input', function() {
+                this.style.backgroundColor = this.value;
+            });
 
             // Add right-click event to delete the color box
             colorBox.addEventListener('contextmenu', function (e) {
@@ -672,8 +691,8 @@ function activateEyedropperForImage() {
                 };
             });
 
-            
-            lastCategoryColorBoxes.appendChild(colorBox); // Append the color box to the last category's color box container
+            colorBoxContainer.appendChild(colorBox);
+            lastCategoryColorBoxes.appendChild(colorBoxContainer); // Append the color box to the last category's color box container
             colorBoxesContainer.scrollTop = colorBoxesContainer.scrollHeight; // Scroll to the bottom
 
             // Add subtle pop animation
@@ -690,6 +709,12 @@ function activateEyedropperForImage() {
         }
     });
 }
+
+function rgbToHex(rgb) {
+    let [r, g, b] = rgb.match(/\d+/g).map(Number);
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
 
 function shakeElement(element) {
     console.log('Shake function called');
