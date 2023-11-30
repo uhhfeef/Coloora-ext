@@ -42,63 +42,22 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("version").textContent = currentVersion;
 });
 
-// Validation for buying the extension
-document.getElementById('paymentLink').addEventListener('click', function () {
-    const paymentLink = document.getElementById('paymentLink');
+// // Validation for buying the extension
+// document.getElementById('paymentLink').addEventListener('click', function () {
+//     const paymentLink = document.getElementById('paymentLink');
 
-    if (paymentLink) {
-        paymentLink.addEventListener('click', async function(e) {
-            e.preventDefault(); // Prevent the default link behavior
+//     if (paymentLink) {
+//         paymentLink.addEventListener('click', async function(e) {
+//             e.preventDefault(); // Prevent the default link behavior
 
-            // Send the Google Analytics event
-            await sendInitialEvent('buy_now_clicked', 'paymentLink');
+//             // Send the Google Analytics event
+//             await sendInitialEvent('buy_now_clicked', 'paymentLink');
 
-            console.log('Buy now clicked');
-        });
-    }
-});
+//             console.log('Buy now clicked');
+//         });
+//     }
+// });
 
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
-
-// Works here
-async function getOrCreateClientId() {
-    const result = await chrome.storage.local.get('clientId');
-    console.log('inside getor create')
-
-    let clientId = result.clientId;
-    if (!clientId) {
-        // Generate a unique client ID, the actual value is not relevant
-        clientId = self.crypto.randomUUID();
-        await chrome.storage.local.set({ clientId });
-    }
-    console.log(clientId)
-    return clientId;
-}
-
-async function sendInitialEvent(eventName, elementId) {
-    try {
-        fetch(
-            FLASK_ENDPOINT,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    client_id: await getOrCreateClientId(),
-                    event_name: eventName,
-                    event_params: {
-                        id: elementId,
-                    },
-                }),
-            }
-        );
-        console.log("event sent");
-    }
-    catch (error) {
-        console.error("Error sending data to Flask server:", error);
-    }
-}
 
 // document.addEventListener("DOMContentLoaded", function () {
     // extpay.getUser().then(user => {
