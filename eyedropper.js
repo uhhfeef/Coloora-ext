@@ -718,6 +718,12 @@ function activateEyedropperForImage() {
             colorBoxContainer.addEventListener('mouseleave', function() {
                 this.style.transform = 'scale(1)'; // Returns to original scale
             });
+
+            colorBoxContainer.addEventListener('click', function(event) {
+                // Check if the color box container was clicked
+                console.log('Color box container clicked');
+                sendInitialEvent('clicked_color_box', 'eyedropperContainer');
+            });
         }
     });
 }
