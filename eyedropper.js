@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -94,7 +94,7 @@ function initializeEyedropper() {
     imageInputContainer.style.display = 'flex'; // Added for centering
     imageInputContainer.style.justifyContent = 'center'; // Center horizontally
     imageInputContainer.style.alignItems = 'center'; // Center vertically
-    // imageInputContainer.style.marginRight = '20px'; // Space between the two child containers
+    
 
     // Create an image container
     const imageContainer = document.createElement('div');
@@ -138,14 +138,40 @@ function initializeEyedropper() {
         e.preventDefault();
         imageContainer.style.backgroundColor = 'transparent'; // Remove overlay
 
-        // Get the URL from the dropped item
-        const url = e.dataTransfer.getData('text');
-        
-        // Display the image in the container
-        imageContainer.innerHTML = `<img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">`;
+        // Check for different types of data
+        if (e.dataTransfer.types.includes('text/uri-list')) {
+            // Handle URI list (common for links)
+            const url = e.dataTransfer.getData('text/uri-list');
+            console.log('Dropped URL:', url);
+            // Display the image in the container
+            imageContainer.innerHTML = `<img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">`;
 
-        // Analyze the image
-        analyzeImage(url);
+            // Analyze the image
+            analyzeImage(url);
+        } else if (e.dataTransfer.types.includes('text/html')) {
+            // Handle HTML (common for rich content)
+            const htmlContent = e.dataTransfer.getData('text/html');
+            const doc = new DOMParser().parseFromString(htmlContent, 'text/html');
+            const imgSrc = doc.querySelector('img') ? doc.querySelector('img').src : null;
+            if (imgSrc) {
+                console.log('Extracted Image URL from HTML:', imgSrc);
+                // Display the image in the container
+                imageContainer.innerHTML = `<img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">`;
+
+                // Analyze the image
+                analyzeImage(url);
+            }
+        } else if (e.dataTransfer.types.includes('text/plain')) {
+            // Handle plain text (fallback)
+            const url = e.dataTransfer.getData('text/plain');
+            console.log('Extracted URL from text:', url);
+            // Display the image in the container
+            imageContainer.innerHTML = `<img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">`;
+
+            // Analyze the image
+            analyzeImage(url);
+        }
+       
         // Animate the visibility of colorBoxesContainer
         colorBoxesContainer.style.opacity = '1'; // Trigger the fade-in animation
         colorBoxesContainer.style.visibility = 'visible';
@@ -158,6 +184,35 @@ function initializeEyedropper() {
             });
         }
     });
+
+    imageContainer.addEventListener('wheel', function(event) {
+        event.preventDefault(); // Prevent scrolling the page
+        let zoomLevel = 1; // Initial zoom level
+
+        // Determine the direction of the scroll
+        const delta = event.deltaY || event.detail || event.wheelDelta;
+
+        // Set the zoom increment or decrement
+        const zoomFactor = 0.1;
+
+        // Zoom in or out
+        if (delta < 0) {
+            zoomLevel += zoomFactor; // Zoom in
+        } else {
+            zoomLevel -= zoomFactor; // Zoom out
+        }
+
+        // Set a minimum and maximum zoom level
+        const minZoomLevel = 1; // Original size
+        const maxZoomLevel = Infinity; // Unlimited zoom
+
+        // Apply the zoom effect within the specified range
+        zoomLevel = Math.min(Math.max(zoomLevel, minZoomLevel), maxZoomLevel);
+
+        // Apply the zoom effect
+        imageContainer.style.transform = `scale(${zoomLevel})`;
+    });
+    
     
     // Create label for color boxes
     const label = document.createElement('label');
@@ -434,6 +489,7 @@ async function extractImageFromPage(url) {
     const imgElements = doc.querySelectorAll('img'); // Find all image elements
     // Return the first image's src attribute
     if (imgElements.length > 0) { 
+        console.log('imgElements', imgElements);
         return imgElements[0].src; 
     }
     throw new Error('No images found');
@@ -455,7 +511,7 @@ function analyzeImage(imageUrl) {
             })
             .catch(error => {
                 shakeElement(imageUrlInputEyedropper);
-                console.error('Failed to extract direct image URL:', error);
+                console.error('Failed to EXTRACT direct image URL:', error);
             });
     } else {
         sendInitialEvent('loaded_image_eyedropper', 'eyedropperContainer');
@@ -627,7 +683,7 @@ function activateEyedropperForImage() {
     imageContainer.addEventListener('click', function (event) {
         sendInitialEvent('created_color_box', 'eyedropperContainer');
 
-        const img = event.target;
+        const img = event.target; // Get the image element
 
         // Ensure the clicked element is an image
         if (img instanceof HTMLImageElement) {
