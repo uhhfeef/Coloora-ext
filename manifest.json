@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Coloora",
-    "version": "0.3.12",
+    "version": "0.3.14",
     "description": "Color wheel, color picker and palette generator",
     "icons": {
         "16": "images/coloora-16.png",
@@ -41,17 +41,6 @@
             ],
             "resources": [
                 "loading-bar.gif"
-            ]
-        }
-    ],
-    "content_scripts": [
-        {
-            "matches": [
-                "https://www.pinterest.com/*",
-                "https://*.pinterest.com/*"
-            ],
-            "js": [
-                "CS-color-wheel.js"
             ]
         }
     ]
