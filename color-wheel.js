@@ -164,8 +164,6 @@ function initializeUIWheel() {
         canvas.style.border = 'none';
         canvas.style.backgroundColor = 'transparent'; // Revert background color
 
-        // Get the URL from the dropped item
-        const url = e.dataTransfer.getData('text');
 
         // Create an image and draw it on the canvas
         const img = new Image();
@@ -173,10 +171,33 @@ function initializeUIWheel() {
             ctx_colorwheel.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
             ctx_colorwheel.drawImage(img, 0, 0, canvas.width, canvas.height); // Draw the image
         };
-        img.src = url;
-        console.log("Dropped image URL:", url);
+        // Check for different types of data
+        if (e.dataTransfer.types.includes('text/uri-list')) {
+            // Handle URI list (common for links)
+            const url = e.dataTransfer.getData('text/uri-list');
+            console.log('Dropped URL:', url);
 
-        analyzeImageWheel(url);
+            // Analyze the image
+            analyzeImageWheel(url);
+        } else if (e.dataTransfer.types.includes('text/html')) {
+            // Handle HTML (common for rich content)
+            const htmlContent = e.dataTransfer.getData('text/html');
+            const doc = new DOMParser().parseFromString(htmlContent, 'text/html');
+            const imgSrc = doc.querySelector('img') ? doc.querySelector('img').src : null;
+            if (imgSrc) {
+                console.log('Extracted Image URL from HTML:', imgSrc);
+
+                // Analyze the image
+                analyzeImageWheel(url);
+            }
+        } else if (e.dataTransfer.types.includes('text/plain')) {
+            // Handle plain text (fallback)
+            const url = e.dataTransfer.getData('text/plain');
+            console.log('Extracted URL from text:', url);
+
+            // Analyze the image
+            analyzeImageWheel(url);
+        }
     });
     container.appendChild(canvas); // Append the canvas to the container
 
