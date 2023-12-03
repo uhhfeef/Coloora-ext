@@ -482,10 +482,14 @@ async function extractImageFromPage(url) {
     const parser = new DOMParser(); // Create a DOM parser
     const doc = parser.parseFromString(text, 'text/html'); // Parse the page
     const imgElements = doc.querySelectorAll('img'); // Find all image elements
-    // Return the first image's src attribute
+    // Return the first or second image's src attribute based on the OS
     if (imgElements.length > 0) { 
         console.log('imgElements', imgElements);
-        return imgElements[0].src; 
+        if (navigator.platform.includes('Mac')) {
+            return imgElements[1].src;
+        } else {
+            return imgElements[0].src;
+        }
     }
     throw new Error('No images found');
 }
