@@ -216,14 +216,17 @@ function initializeUIWheel() {
 async function extractImageFromPage(url) {
     const response = await fetch(url); // Fetch the page
     const text = await response.text(); // Get the page content as text
-    const parser = new DOMParser(); // Parse the text as HTML
-    const doc = parser.parseFromString(text, 'text/html'); // Get the document object
-    const imgElements = doc.querySelectorAll('img'); // Find all img elements
-    console.log("Found images:", imgElements);
-    
-    // Return the first image's src attribute
-    if (imgElements.length > 0) {
-        return imgElements[0].src;
+    const parser = new DOMParser(); // Create a DOM parser
+    const doc = parser.parseFromString(text, 'text/html'); // Parse the page
+    const imgElements = doc.querySelectorAll('img'); // Find all image elements
+    // Return the first or second image's src attribute based on the OS
+    if (imgElements.length > 0) { 
+        console.log('imgElements', imgElements);
+        if (navigator.platform.includes('Mac')) {
+            return imgElements[1].src;
+        } else {
+            return imgElements[0].src;
+        }
     }
     throw new Error('No images found');
 }
