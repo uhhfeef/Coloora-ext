@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -45,8 +45,9 @@ sendInitialEvent('custom_palette_loaded', 'eyedropperContainer');
 
 // Initialization: Setting up the UI
 console.log("eyedropper base  loaded!");
-let imageUrlInputEyedropper = document.getElementById('imageUrl');
-let analyzeButtonEyedropper = document.getElementById('analyzeButtonEyedropper');
+let zoomLevel = 1; // Initial zoom level
+let zoomCenterX = 0; // Initial zoom center X
+let zoomCenterY = 0; // Initial zoom center Y
 
 function initializeEyedropper() {
     console.log("Initializing UI...");
@@ -113,6 +114,7 @@ function initializeEyedropper() {
     imageContainer.style.display = 'flex'; // Add flex display
     imageContainer.style.justifyContent = 'center'; // Center horizontally
     imageContainer.style.alignItems = 'center'; // Center vertically
+    imageContainer.style.overflow = 'hidden'; // Allow overflow for the image
 
     // Prevent dragging of the image container
     imageContainer.addEventListener('dragstart', function(e) {
@@ -185,35 +187,7 @@ function initializeEyedropper() {
         }
     });
 
-    imageContainer.addEventListener('wheel', function(event) {
-        event.preventDefault(); // Prevent scrolling the page
-        let zoomLevel = 1; // Initial zoom level
 
-        // Determine the direction of the scroll
-        const delta = event.deltaY || event.detail || event.wheelDelta;
-
-        // Set the zoom increment or decrement
-        const zoomFactor = 0.1;
-
-        // Zoom in or out
-        if (delta < 0) {
-            zoomLevel += zoomFactor; // Zoom in
-        } else {
-            zoomLevel -= zoomFactor; // Zoom out
-        }
-
-        // Set a minimum and maximum zoom level
-        const minZoomLevel = 1; // Original size
-        const maxZoomLevel = Infinity; // Unlimited zoom
-
-        // Apply the zoom effect within the specified range
-        zoomLevel = Math.min(Math.max(zoomLevel, minZoomLevel), maxZoomLevel);
-
-        // Apply the zoom effect
-        imageContainer.style.transform = `scale(${zoomLevel})`;
-    });
-    
-    
     // Create label for color boxes
     const label = document.createElement('label');
     label.innerText = 'Click to pick, right click to delete';
@@ -570,8 +544,15 @@ function sendImageForAnalysisEyedropper(imageUrl) {
                     // Remove any previous images
                     imageContainer.innerHTML = '';
 
+                    // Create a new container for holding the image
+                    const image = document.createElement('div');
+                    image.id = 'image';
+
                     // Append the new image
-                    imageContainer.appendChild(img);
+                    image.appendChild(img);
+                    imageContainer.appendChild(image);
+
+                    img.addEventListener('wheel', handleWheelEvent); // Add event listener for zooming
 
                     // Set the color box container height to the image height
                     colorBoxContainer.style.height = `${img.height}px`;
@@ -782,6 +763,33 @@ function activateEyedropperForImage() {
             });
         }
     });
+}
+
+function handleWheelEvent(event) {
+    event.preventDefault();
+
+    const delta = event.deltaY || event.detail || event.wheelDelta;
+    const zoomFactor = 0.1;
+
+    // Update zoom level
+    if (delta < 0) {
+        zoomLevel *= (1 + zoomFactor);
+    } else {
+        zoomLevel /= (1 + zoomFactor);
+    }
+
+    const minZoomLevel = 1;
+    const maxZoomLevel = Infinity;
+    zoomLevel = Math.max(minZoomLevel, Math.min(zoomLevel, maxZoomLevel));
+
+    // Calculate the center of the zoom based on the mouse position
+    const rect = this.getBoundingClientRect();
+    const zoomCenterX = (event.clientX - rect.left) / rect.width;
+    const zoomCenterY = (event.clientY - rect.top) / rect.height;
+
+    // Apply the zoom transformation
+    this.style.transformOrigin = `${zoomCenterX * 100}% ${zoomCenterY * 100}%`;
+    this.style.transform = `scale(${zoomLevel})`;
 }
 
 function rgbToHex(rgb) {
