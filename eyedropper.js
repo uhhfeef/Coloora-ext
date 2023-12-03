@@ -1,4 +1,4 @@
-// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -190,7 +190,7 @@ function initializeEyedropper() {
 
     // Create label for color boxes
     const label = document.createElement('label');
-    label.innerText = 'Click to pick, right click to delete';
+    label.innerText = 'Click to pick, right click to delete\nZoom in and out with mouse wheel';
     label.style.color = '#fff';
     label.style.fontSize = '12px';
     label.style.marginTop = '10px';
@@ -215,6 +215,27 @@ function initializeEyedropper() {
     colorContainer.appendChild(colorBoxesContainer);
 
     addNewCategory(colorBoxesContainer);
+
+    // create a b/w filter to clipboard button
+    const greyscaleButton = document.createElement('button');
+    greyscaleButton.id = 'greyscaleButton';
+    greyscaleButton.innerText = '◐';
+    greyscaleButton.style.fontSize = '24px';
+    greyscaleButton.style.color = '#fff';
+    greyscaleButton.style.position = 'absolute';
+    greyscaleButton.style.bottom = '16px';
+    greyscaleButton.style.right = '70px';
+    greyscaleButton.style.backgroundColor = 'transparent'; // Set button color to transparent
+    greyscaleButton.style.outline = 'none'; // Remove outline
+    greyscaleButton.style.border = 'none'; // Remove border
+    greyscaleButton.style.outline = 'none'; // Remove outline
+    greyscaleButton.style.cursor = 'pointer'; // Change cursor to pointer on hover
+    colorBoxesContainer.appendChild(greyscaleButton);
+    // Add event listener to the copy button
+    greyscaleButton.addEventListener('click', function() {
+        sendInitialEvent('greyscale_clicked', 'eyedropperContainer');
+        toggleGrayscale();
+    });
 
     // create a copy to clipboard button
     const copyButton = document.createElement('button');
@@ -790,6 +811,18 @@ function handleWheelEvent(event) {
     // Apply the zoom transformation
     this.style.transformOrigin = `${zoomCenterX * 100}% ${zoomCenterY * 100}%`;
     this.style.transform = `scale(${zoomLevel})`;
+}
+
+// JavaScript to toggle grayscale
+function toggleGrayscale() {
+    const image = document.getElementById('image'); // Assuming the image has an ID 'image'
+
+    // Check if the image already has grayscale applied
+    if (image.style.filter === 'grayscale(100%)') {
+        image.style.filter = ''; // Remove the grayscale filter
+    } else {
+        image.style.filter = 'grayscale(100%)'; // Apply the grayscale filter
+    }
 }
 
 function rgbToHex(rgb) {
