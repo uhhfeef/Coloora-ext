@@ -1,4 +1,4 @@
-var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 // Works here
 async function getOrCreateClientId() {
@@ -194,6 +194,7 @@ function initializeEyedropper() {
     label.style.color = '#fff';
     label.style.fontSize = '12px';
     label.style.marginTop = '10px';
+    label.style.textAlign = 'center'; // Center the inner text
     imageInputContainer.appendChild(label);
 
     container.appendChild(imageInputContainer);
@@ -223,7 +224,7 @@ function initializeEyedropper() {
     greyscaleButton.style.fontSize = '24px';
     greyscaleButton.style.color = '#fff';
     greyscaleButton.style.position = 'absolute';
-    greyscaleButton.style.bottom = '16px';
+    greyscaleButton.style.bottom = '15px';
     greyscaleButton.style.right = '70px';
     greyscaleButton.style.backgroundColor = 'transparent'; // Set button color to transparent
     greyscaleButton.style.outline = 'none'; // Remove outline
@@ -233,8 +234,8 @@ function initializeEyedropper() {
     colorBoxesContainer.appendChild(greyscaleButton);
     // Add event listener to the copy button
     greyscaleButton.addEventListener('click', function() {
-        sendInitialEvent('greyscale_clicked', 'eyedropperContainer');
         toggleGrayscale();
+        sendInitialEvent('greyscale_clicked', 'eyedropperContainer');
     });
 
     // create a copy to clipboard button
