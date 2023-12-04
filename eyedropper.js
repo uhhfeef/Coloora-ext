@@ -451,29 +451,24 @@ function copyColorBoxesAsImage() {
         yOffset += 30; // Adjust space for category name
     
         // Draw color boxes
-        const colorBoxes = category.querySelectorAll('#new-category-color-boxes > div > input[type=color]');
+        const colorBoxes = category.querySelectorAll('div[id$="-color-boxes"] > div > input');
         let xOffset = 0;
-        let rowHeight = 0;
+        let rowHeight = 40;
         for (const box of colorBoxes) {
             const color = box.style.backgroundColor;
             ctx.fillStyle = color;
-            ctx.fillRect(xOffset, yOffset, box.offsetWidth, box.offsetHeight);
-            xOffset += box.offsetWidth; // 5px for margin between boxes
-    
-            // Update rowHeight to the tallest box in the current row
-            rowHeight = Math.max(rowHeight, box.offsetHeight);
+            ctx.fillRect(xOffset, yOffset, 40, 40);
+            xOffset += 40; 
     
             // Move to next row if end of current row is reached
-            if (xOffset + box.offsetWidth > canvas.width) {
+            if (xOffset + 40 > canvas.width) {
                 xOffset = 0;
-                yOffset += rowHeight; // 5px for margin between rows
-                rowHeight = 0;
+                yOffset += rowHeight; 
             }
         }
         yOffset += rowHeight + 20; // Space after each category
     }
     
-
     // Convert the canvas to a blob and copy to clipboard
     canvas.toBlob(function(blob) {
         const item = new ClipboardItem({ "image/png": blob });
