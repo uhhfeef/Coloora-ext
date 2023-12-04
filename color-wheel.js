@@ -17,27 +17,33 @@ async function getOrCreateClientId() {
 }
 
 async function sendInitialEvent(eventName, elementId) {
-    try {
-        fetch(
-            FLASK_ENDPOINT,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    client_id: await getOrCreateClientId(),
-                    event_name: eventName,
-                    event_params: {
-                        id: elementId,
+    clientId = await getOrCreateClientId();
+    if (clientId !== "a1e0c334-cbc9-43bf-8de0-16d4a4f89ab7") {
+        try {
+            fetch(
+                FLASK_ENDPOINT,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
                     },
-                }),
-            }
-        );
-        console.log("event sent");
-    }
-    catch (error) {
-        console.error("Error sending data to Flask server:", error);
+                    body: JSON.stringify({
+                        client_id: await getOrCreateClientId(),
+                        event_name: eventName,
+                        event_params: {
+                            id: elementId,
+                        },
+                    }),
+                }
+            );
+            console.log("event sent");
+        }
+        catch (error) {
+            console.error("Error sending data to Flask server:", error);
+        }
+    } else {
+        console.log("demo user, event not sent");
+        return;
     }
 }
 
