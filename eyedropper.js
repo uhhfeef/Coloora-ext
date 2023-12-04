@@ -451,7 +451,7 @@ function copyColorBoxesAsImage() {
         yOffset += 30; // Adjust space for category name
     
         // Draw color boxes
-        const colorBoxes = category.querySelectorAll('div[id$="-color-boxes"] > div');
+        const colorBoxes = category.querySelectorAll('#new-category-color-boxes > div > input[type=color]');
         let xOffset = 0;
         let rowHeight = 0;
         for (const box of colorBoxes) {
