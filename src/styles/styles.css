@@ -1,0 +1,110 @@
+body {
+    font-family: 'San Francisco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh; */
+    border: 3px solid #2a2a2a;
+    box-sizing: border-box;
+    overflow: hidden;
+    color: #ddd;
+    font-weight: 500;
+}
+
+.dark-mode {
+    background-color: #1a1a1a;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    background-color: #2a2a2a;
+    padding: 20px 20px 40px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    /* width: 250px; */
+}
+
+h1 {
+    color: #ddd;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+textarea {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    resize: vertical;
+    font-family: 'San Francisco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.btn {
+    background-color: #007AFF;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 5px 0;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    position: relative;
+    /* Added for the active state effect */
+    top: 0;
+    /* Added for the active state effect */
+}
+
+.btn:hover {
+    background-color: #005BB5;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
+    /* Slightly larger shadow on hover */
+}
+
+.btn:active {
+    background-color: #004191;
+    top: 2px;
+    /* Button moves down a bit to simulate a press */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* Smaller shadow when pressed */
+}
+
+#trialMessage {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.footer {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    /* Adjust the alpha value (0.6) to change brightness */
+    text-align: center;
+    /* margin-top: 10px; */
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    /* Optional: Adds a subtle line above the footer */
+    padding: 5px 0 5px 0;
+}
+
+.text {
+    color: #4545ff;
+    /* Adjust size as needed */
+}
+
+.highlighted-link {
+    background-color: #004191; /* Light blue background */
+    color: white; /* White text */
+    padding: 2px 5px; /* Some padding for better appearance */
+    border-radius: 2px; /* Optional: rounded corners */
+}
