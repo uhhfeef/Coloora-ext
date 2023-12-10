@@ -1,5 +1,5 @@
 import { sendInitialEvent } from '../modules/gaAnalytics';
-import { extractImageFromPage, analyzeImage } from '../modules/imageAnalysis';
+import { fetchImageData, extractImageFromPage, analyzeImage } from '../modules/imageAnalysis';
 import { showLoadingGif, hideLoadingGif } from '../modules/loadingBar';
 
 // Constants and DOM elements
@@ -165,40 +165,28 @@ function initializeUIWheel() {
 }
 
 function sendImageForAnalysis(imageUrl) {
-    console.log("Sending image URL to Flask API:", imageUrl);
     showLoadingGif(
         document.getElementById('colorWheelContainer'),
         document.getElementById('colorWheel')
     );
 
-    // Endpoint where the Flask API is running.
-    // const flaskApiEndpoint = "http://localhost:5000/fetch-image"; //demo
-    const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image";
+    fetchImageData(imageUrl, (dataUrl) => {
+        handleImageLoad(dataUrl);
+        // Additional success logic if needed
+    }, (error) => {
+        console.error(error);
+        // Additional error handling logic if needed
+    });
+}
 
-    fetch(flaskApiEndpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ imageURL: imageUrl })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.dataURL) {
-                const img = new Image();
-                img.src = data.dataURL;
-                img.onload = function () {
-                    const colorData = downsampleAndAnalyzeColors(img);
-                    drawColorWheel();  // Reset the color wheel
-                    updateColorWheel(colorData);
-                }
-            } else {
-                console.error("Error:", data.error);
-            }
-        })
-        .catch(error => {
-            console.error("Network Error:", error);
-        });
+function handleImageLoad(dataUrl) {
+    const img = new Image();
+    img.src = dataUrl;
+    img.onload = function () {
+        const colorData = downsampleAndAnalyzeColors(img);
+        drawColorWheel();  // Reset the color wheel
+        updateColorWheel(colorData);
+    }
 }
 
 

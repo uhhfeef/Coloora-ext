@@ -139,7 +139,8 @@ function _sendInitialEvent() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   analyzeImage: () => (/* binding */ analyzeImage),
-/* harmony export */   extractImageFromPage: () => (/* binding */ extractImageFromPage)
+/* harmony export */   extractImageFromPage: () => (/* binding */ extractImageFromPage),
+/* harmony export */   fetchImageData: () => (/* binding */ fetchImageData)
 /* harmony export */ });
 /* harmony import */ var _gaAnalytics__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gaAnalytics */ "./src/modules/gaAnalytics.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -209,6 +210,31 @@ function analyzeImage(imageUrl, sendInitialEvent, event, id, sendImageForAnalysi
     sendInitialEvent(event, id);
     sendImageForAnalysis(imageUrl);
   }
+}
+function fetchImageData(imageUrl, onSuccess, onError) {
+  console.log("inside imageanalysis.js");
+  console.log("Sending image URL to Flask API:", imageUrl);
+  var flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image"; // prod
+
+  fetch(flaskApiEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      imageURL: imageUrl
+    })
+  }).then(function (response) {
+    return response.json();
+  }).then(function (data) {
+    if (data.success && data.dataURL) {
+      onSuccess(data.dataURL);
+    } else {
+      onError('Image analysis failed: ' + data.error);
+    }
+  })["catch"](function (error) {
+    onError('Network error: ' + error.message);
+  });
 }
 
 // function checkDataTypes() {

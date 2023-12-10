@@ -42,6 +42,30 @@ function analyzeImage(imageUrl, sendInitialEvent, event, id, sendImageForAnalysi
     }
 }
 
+export function fetchImageData(imageUrl, onSuccess, onError) {
+    console.log("inside imageanalysis.js");
+    console.log("Sending image URL to Flask API:", imageUrl);
+
+    const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image"; // prod
+
+    fetch(flaskApiEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageURL: imageUrl })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.dataURL) {
+            onSuccess(data.dataURL);
+        } else {
+            onError('Image analysis failed: ' + data.error);
+        }
+    })
+    .catch(error => {
+        onError('Network error: ' + error.message);
+    });
+}
+
 // function checkDataTypes() {
 //     // Check for different types of data
 //     if (e.dataTransfer.types.includes('text/uri-list')) {

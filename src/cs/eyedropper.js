@@ -1,5 +1,5 @@
 import { sendInitialEvent } from '../modules/gaAnalytics';
-import { extractImageFromPage, analyzeImage } from '../modules/imageAnalysis';
+import { fetchImageData, extractImageFromPage, analyzeImage } from '../modules/imageAnalysis';
 
 var zoomLevel = 1; // Initial zoom level
 var zoomCenterX = 0; // Initial zoom center X
@@ -367,77 +367,44 @@ function copyColorBoxesAsImage() {
 }
 
 function sendImageForAnalysis(imageUrl) {
-    console.log("Sending image URL to Flask API:", imageUrl);
-    // showLoadingGif();
+    fetchImageData(imageUrl, (dataUrl) => {
+        handleImageLoad(dataUrl, 'imageContainer', 'colorBoxesContainer');
+        // Additional success logic if needed
+    }, (error) => {
+        console.error(error);
+        // Additional error handling logic if needed
+    });
+}
 
-    // Endpoint where the Flask API is running.
-    // const flaskApiEndpoint = "http://localhost:5000/fetch-image"; //demo 
-    const flaskApiEndpoint = "https://coloora-400822.et.r.appspot.com/fetch-image"; //prod
+function handleImageLoad(dataUrl, imageContainerId, colorBoxContainerId) {
+    const img = new Image();
+    img.src = dataUrl;
+    img.onload = () => {
+        updateImageDimensions(img, imageContainerId);
+        setupImageInteraction(img, colorBoxContainerId);
+    };
+}
 
-    fetch(flaskApiEndpoint, {
-        // Send the image URL to the Flask API
-        method: 'POST', // Send a POST request
-        headers: { 
-            'Content-Type': 'application/json', // Send the image URL in JSON format
-        },
-        body: JSON.stringify({ imageURL: imageUrl }) // Send the image URL in the request body
-    })
-        // Get the response from the Flask API
-        .then(response => response.json()) 
-        .then(data => {
-            if (data.success && data.dataURL) { // If the response is successful
-                // Create an image element
-                const img = new Image(); // Create a new image element
-                img.src = data.dataURL; // Set the image source to the data URL
-                img.onload = function () {
-                    // Calculate the aspect ratio
-                    const aspectRatio = img.naturalWidth / img.naturalHeight;
+function updateImageDimensions(img, imageContainerId) {
+    const aspectRatio = img.naturalWidth / img.naturalHeight;
+    const halfViewportHeight = window.innerHeight / 2;
+    const imageContainer = document.getElementById(imageContainerId);
 
-                    // Get half the viewport height
-                    const halfViewportHeight = window.innerHeight / 2; 
+    img.height = img.naturalHeight > halfViewportHeight ? halfViewportHeight : img.naturalHeight;
+    img.width = img.height * aspectRatio;
+    imageContainer.style.width = `${img.width}px`;
+    imageContainer.style.height = `${img.height}px`;
+    imageContainer.innerHTML = ''; // Clear the container
+    const imageHolder = document.createElement('div');
+    imageHolder.id = 'image';
+    imageHolder.appendChild(img);
+    imageContainer.appendChild(imageHolder);
+}
 
-                    const colorBoxContainer = document.getElementById('colorBoxesContainer');
-
-                    // Get the image container
-                    const imageContainer = document.getElementById('imageContainer');
-
-                    // If the image's natural height exceeds half the viewport height, adjust its dimensions
-                    if (img.naturalHeight > halfViewportHeight) {
-                        img.height = halfViewportHeight;
-                        img.width = halfViewportHeight * aspectRatio;
-                    } else {
-                        img.width = img.naturalWidth;
-                        img.height = img.naturalHeight;
-                    }
-                        
-                    // Set the image container dimensions
-                    imageContainer.style.width = `${img.width}px`;
-                    imageContainer.style.height = `${img.height}px`;
-
-                    // Remove any previous images
-                    imageContainer.innerHTML = '';
-
-                    // Create a new container for holding the image
-                    const image = document.createElement('div');
-                    image.id = 'image';
-
-                    // Append the new image
-                    image.appendChild(img);
-                    imageContainer.appendChild(image);
-
-                    img.addEventListener('wheel', handleWheelEvent); // Add event listener for zooming
-
-                    // Set the color box container height to the image height
-                    colorBoxContainer.style.height = `${img.height}px`;
-                }
-            }
-            else {
-                console.error("Error:", data.error);
-            }
-        })
-        .catch(error => {
-            console.error("Network Error:", error);
-        });
+function setupImageInteraction(img, colorBoxContainerId) {
+    const colorBoxContainer = document.getElementById(colorBoxContainerId);
+    colorBoxContainer.style.height = `${img.height}px`;
+    img.addEventListener('wheel', handleWheelEvent); // Add event listener for zooming
 }
 
 function activateEyedropperForImage() {
