@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Coloora1",
+    "name": "Coloora",
     "version": "0.3.20",
     "description": "Color wheel, color picker and palette generator",
     "icons": {

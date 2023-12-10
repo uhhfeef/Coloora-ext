@@ -454,7 +454,7 @@ function initializeEyedropper() {
   greyscaleButton.id = 'greyscaleButton';
   greyscaleButton.innerText = '◐';
   colorBoxesContainer.appendChild(greyscaleButton);
-  // Add event listener to the copy button
+  // Add event listener to the greyscale button
   greyscaleButton.addEventListener('click', function () {
     toggleGrayscale();
     (0,_modules_gaAnalytics__WEBPACK_IMPORTED_MODULE_0__.sendInitialEvent)('greyscale_clicked', 'eyedropperContainer');
@@ -612,21 +612,9 @@ function copyColorBoxesAsImage() {
 
   // Calculate the size of the canvas
   var canvasWidth = 200; // Adjust as needed
-  var canvasHeight = 0;
-  var _iterator = _createForOfIteratorHelper(categories),
-    _step;
-  try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var category = _step.value;
-      canvasHeight += category.offsetHeight + 10; // 10px for margin
-    }
+  var canvasHeight = colorBoxesContainer.scrollHeight;
 
-    // Create a canvas element
-  } catch (err) {
-    _iterator.e(err);
-  } finally {
-    _iterator.f();
-  }
+  // Create a canvas element
   var canvas = document.createElement('canvas');
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
@@ -634,27 +622,27 @@ function copyColorBoxesAsImage() {
 
   // Draw color boxes and category names on the canvas
   var yOffset = 0;
-  var _iterator2 = _createForOfIteratorHelper(categories),
-    _step2;
+  var _iterator = _createForOfIteratorHelper(categories),
+    _step;
   try {
-    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-      var _category = _step2.value;
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var category = _step.value;
       // Draw category name
-      var categoryName = _category.querySelector('div').innerText;
+      var categoryName = category.querySelector('div').innerText;
       ctx.fillStyle = '#000'; // Text color
       ctx.font = '16px Arial'; // Adjust font style as needed
       ctx.fillText(categoryName, 0, yOffset + 16); // Adjust text position as needed
       yOffset += 30; // Adjust space for category name
 
       // Draw color boxes
-      var colorBoxes = _category.querySelectorAll('div[id$="-color-boxes"] > div > input');
+      var colorBoxes = category.querySelectorAll('div[id$="-color-boxes"] > div > input');
       var xOffset = 0;
       var rowHeight = 40;
-      var _iterator3 = _createForOfIteratorHelper(colorBoxes),
-        _step3;
+      var _iterator2 = _createForOfIteratorHelper(colorBoxes),
+        _step2;
       try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var box = _step3.value;
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var box = _step2.value;
           var color = box.style.backgroundColor;
           ctx.fillStyle = color;
           ctx.fillRect(xOffset, yOffset, 40, 40);
@@ -667,18 +655,18 @@ function copyColorBoxesAsImage() {
           }
         }
       } catch (err) {
-        _iterator3.e(err);
+        _iterator2.e(err);
       } finally {
-        _iterator3.f();
+        _iterator2.f();
       }
       yOffset += rowHeight + 20; // Space after each category
     }
 
     // Convert the canvas to a blob and copy to clipboard
   } catch (err) {
-    _iterator2.e(err);
+    _iterator.e(err);
   } finally {
-    _iterator2.f();
+    _iterator.f();
   }
   canvas.toBlob(function (blob) {
     var item = new ClipboardItem({

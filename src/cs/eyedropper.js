@@ -149,7 +149,7 @@ function initializeEyedropper() {
     greyscaleButton.id = 'greyscaleButton';
     greyscaleButton.innerText = '◐';
     colorBoxesContainer.appendChild(greyscaleButton);
-    // Add event listener to the copy button
+    // Add event listener to the greyscale button
     greyscaleButton.addEventListener('click', function() {
         toggleGrayscale();
         sendInitialEvent('greyscale_clicked', 'eyedropperContainer');
@@ -320,10 +320,7 @@ function copyColorBoxesAsImage() {
     
     // Calculate the size of the canvas
     let canvasWidth = 200; // Adjust as needed
-    let canvasHeight = 0;
-    for (const category of categories) {
-        canvasHeight += category.offsetHeight + 10; // 10px for margin
-    }
+    let canvasHeight = colorBoxesContainer.scrollHeight;
 
     // Create a canvas element
     const canvas = document.createElement('canvas');

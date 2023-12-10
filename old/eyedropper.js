@@ -238,7 +238,7 @@ function initializeEyedropper() {
     greyscaleButton.style.outline = 'none'; // Remove outline
     greyscaleButton.style.cursor = 'pointer'; // Change cursor to pointer on hover
     colorBoxesContainer.appendChild(greyscaleButton);
-    // Add event listener to the copy button
+    // Add event listener to the grayscale button
     greyscaleButton.addEventListener('click', function() {
         toggleGrayscale();
         sendInitialEvent('greyscale_clicked', 'eyedropperContainer');
