@@ -45,5 +45,5 @@ module.exports = {
   ],
   // Optional: Enable source maps for debugging
   devtool: 'source-map',
-  mode: 'development',
+  // mode: 'development',
 };

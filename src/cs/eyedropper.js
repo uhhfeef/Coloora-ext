@@ -112,7 +112,7 @@ function initializeEyedropper() {
        
         // Animate the visibility of colorBoxesContainer
         colorBoxesContainer.style.opacity = '1'; // Trigger the fade-in animation
-        colorBoxesContainer.style.visibility = 'visible';
+        // colorBoxesContainer.style.visibility = 'visible';
         imageContainer.style.border = 'none';
         const img = imageContainer.querySelector('img');
         if (img) {
@@ -670,10 +670,8 @@ function toggleUI() {
         initializeEyedropper();
         sendInitialEvent('custom_palette_loaded', 'eyedropperContainer');
     } else {
-        // Toggle the visibility of the UI
+        // return; // Terminate the function
         eyedropperContainer.style.visibility = 'visible';
-        eyedropperContainer.style.opacity = '1';
-        sendInitialEvent('custom_palette_loaded', 'eyedropperContainer');
     }
 }
 

@@ -8,7 +8,7 @@ canvas.id = "colorWheel";
 var ctx_colorwheel;
 var center_color_wheel;
 var radius;
-
+addMessageListener()
 // Initialization: Setting up the UI
 function initializeUIWheel() {
     console.log("Initializing UI...");
@@ -22,7 +22,8 @@ function initializeUIWheel() {
     closeButton.className = 'close-button';
     closeButton.innerText = 'X';
     closeButton.onclick = () => {
-        document.body.removeChild(container);
+        // document.body.removeChild(container);
+        container.style.visibility = 'hidden';
     };
     container.appendChild(closeButton);
 
@@ -279,6 +280,7 @@ function analyzeColors(ctx_colorwheel, width, height) {
 }
 
 function updateColorWheel(colorData) {
+    console.log('Updating color wheel...');
     for (let angle = 0; angle < 360; angle++) {
         for (let r = 0; r < radius; r++) {
             ctx_colorwheel.beginPath();
@@ -332,21 +334,36 @@ function toggleUI() {
     let colorWheelContainer = document.getElementById('colorWheelContainer');
     console.log('inside toggle')
 
+    // Check if the UI exists
     if (!colorWheelContainer) {
         initializeUIWheel();
-        sendInitialEvent('color_wheel_loaded', 'colorWheelContainer');
     } else {
-        // Toggle the visibility of the UI
+        console.log('alraedy exists')
         colorWheelContainer.style.visibility = 'visible';
-        colorWheelContainer.style.opacity = '1';
-        sendInitialEvent('color_wheel_loaded', 'colorWheelContainer');
+        // return; // Terminate the function
     }
 }
 
-// Listen for messages from the popup or background script
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+// flag to indicate if the listener has been added
+let messageListenerAdded = false;
+console.log('message listener added');
+
+function addMessageListener() {
+  if (messageListenerAdded) return;
+
+  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action === "toggleColorWheel") {
-        console.log('inside chrome runtime message listener');
-        toggleUI();
+      console.log('inside chrome runtime message listener in color wheel');
+      toggleUI();
     }
-});
+  });
+
+  messageListenerAdded = true;
+  console.log('message listener added');
+}
+
+
+// chrome.runtime.onMessage.removeListener(function(request, sender, sendResponse) {
+//     if (request.action === "removeColorWheel") {
+//         console.log('inside chrome runtime message listener for removal in color wheel');
+//         removeUI();

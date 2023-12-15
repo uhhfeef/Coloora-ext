@@ -18,7 +18,7 @@ async function getOrCreateClientId() {
 
 async function sendInitialEvent(eventName, elementId) {
     clientId = await getOrCreateClientId();
-    if (clientId !== "a1e0c334-cbc9-43bf-8de0-16d4a4f89ab7") {
+    if (clientId !== "e5924d98-1f91-4479-84e8-1befece37a1c") {
         try {
             fetch(
                 FLASK_ENDPOINT,
