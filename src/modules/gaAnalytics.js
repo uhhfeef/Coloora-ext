@@ -1,4 +1,4 @@
-// var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
+var FLASK_ENDPOINT = 'https://coloora-400822.et.r.appspot.com/send-analytics';
 
 let clientId;
 
