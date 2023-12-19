@@ -64,7 +64,12 @@ function initializeEyedropper() {
             const url = e.dataTransfer.getData('text/uri-list');
             console.log('Dropped URL:', url);
             // Display the image in the container
-            imageContainer.innerHTML = `<img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">`;
+            imageContainer.innerHTML = `<div style="position: relative; max-width: 100%; max-height: 150px;">
+                    <img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background-color: rgba(0, 0, 0, 0.5); color: white; font-size: 1em;">
+                        Loading...
+                    </div>
+                </div>`;
 
             // Analyze the image
             analyzeImage(
@@ -82,8 +87,12 @@ function initializeEyedropper() {
             if (imgSrc) {
                 console.log('Extracted Image URL from HTML:', imgSrc);
                 // Display the image in the container
-                imageContainer.innerHTML = `<img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">`;
-
+                imageContainer.innerHTML = `<div style="position: relative; max-width: 100%; max-height: 150px;">
+                <img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background-color: rgba(0, 0, 0, 0.5); color: white; font-size: 1em;">
+                    Loading...
+                </div>
+            </div>`;
                 // Analyze the image
                 analyzeImage(
                     url,
@@ -98,8 +107,12 @@ function initializeEyedropper() {
             const url = e.dataTransfer.getData('text/plain');
             console.log('Extracted URL from text:', url);
             // Display the image in the container
-            imageContainer.innerHTML = `<img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">`;
-
+            imageContainer.innerHTML = `<div style="position: relative; max-width: 100%; max-height: 150px;">
+            <img src="${url}" alt="Dropped Image" style="max-width: 100%; max-height: 150px;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background-color: rgba(0, 0, 0, 0.5); color: white; font-size: 1em;">
+                Loading...
+            </div>
+        </div>`;
             // Analyze the image
             analyzeImage(
                 url,
