@@ -161,6 +161,7 @@ function initializeEyedropper() {
     greyscaleButton.className = 'label-button'
     greyscaleButton.id = 'greyscaleButton';
     greyscaleButton.innerText = '◐';
+    greyscaleButton.style.bottom = '20px';
     colorBoxesContainer.appendChild(greyscaleButton);
     // Add event listener to the greyscale button
     greyscaleButton.addEventListener('click', function() {
