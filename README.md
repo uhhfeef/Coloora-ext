@@ -4,6 +4,11 @@
 
 Coloora is a powerful Chrome extension that provides a suite of color-related tools for designers, developers, and anyone working with colors. It offers features such as a color wheel, color palette generator, custom palette creator, and gradient generator.
 
+## Chrome Web Store
+
+Coloora is available on the Chrome Web Store. You can install it directly from here:
+[Coloora Color Picker](https://chromewebstore.google.com/detail/coloora-color-picker/phdgnljpgjngdcmkfoakcechbmikjmok)
+
 ## Features
 
 - **Color Wheel**: Interactive color wheel for selecting and exploring colors
@@ -15,6 +20,11 @@ Coloora is a powerful Chrome extension that provides a suite of color-related to
 
 ## Installation
 
+### From Chrome Web Store
+1. Visit the [Coloora Color Picker](https://chromewebstore.google.com/detail/coloora-color-picker/phdgnljpgjngdcmkfoakcechbmikjmok) page on the Chrome Web Store.
+2. Click "Add to Chrome" to install the extension.
+
+### For Development
 1. Clone this repository or download the source code.
 2. Navigate to the project directory and run `npm install` to install dependencies.
 3. Run `npm run watch` to build the extension and watch for changes.
