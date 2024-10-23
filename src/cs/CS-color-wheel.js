@@ -540,14 +540,14 @@ const config = {
 
 // Start observing the document
 observer.observe(document.body, config);
-// Function to restart your content script
+// Function to restart content script
 function restartContentScript() {
     console.log("Restarting content script due to URL change...");
 
     const existingButtons = document.querySelectorAll('#injectColorWheel'); // Select all existing buttons
     existingButtons.forEach(btn => btn.remove()); // Remove all existing buttons
 
-    // Re-run your content script initialization code
+    // Re-run content script initialization code
     handleImages();
 }
 

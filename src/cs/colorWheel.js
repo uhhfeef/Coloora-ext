@@ -11,6 +11,23 @@ var radius;
 addMessageListener()
 // Initialization: Setting up the UI
 function initializeUIWheel() {
+    // This function initializes the user interface for the color wheel component
+    // It sets up the main container, close button, and drag-and-drop functionality
+    
+    // Key steps:
+    // 1. Creates a container div for the color wheel
+    // 2. Adds a close button to hide the container
+    // 3. Sets up event listeners for drag-and-drop functionality
+    //    - mousedown: Starts the drag operation
+    //    - mousemove: Updates the container position while dragging
+    //    - mouseup: Ends the drag operation
+    
+    // The drag-and-drop implementation:
+    // - Tracks the initial mouse and container positions when dragging starts
+    // - Calculates the movement delta during dragging
+    // - Updates the container's position based on the mouse movement
+    // - Adjusts for the container's transform offset to ensure accurate positioning
+    
     console.log("Initializing UI...");
     // Create a container for the color wheel
     const container = document.createElement('div');
@@ -173,10 +190,8 @@ function sendImageForAnalysis(imageUrl) {
 
     fetchImageData(imageUrl, (dataUrl) => {
         handleImageLoad(dataUrl);
-        // Additional success logic if needed
     }, (error) => {
         console.error(error);
-        // Additional error handling logic if needed
     });
 }
 
